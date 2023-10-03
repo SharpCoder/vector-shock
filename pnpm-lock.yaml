@@ -18,7 +18,7 @@ devDependencies:
   tslib: 2.6.2
   typescript: 5.2.2
   vite: 4.4.9
-  webgl-engine: github.com/SharpCoder/webgl-engine/2cdafc5f2818470b723a953155043e34356d0be7
+  webgl-engine: github.com/SharpCoder/webgl-engine/9ccd77d117a95b66c2194b913e2994b04dfd57d5
 
 packages:
 
@@ -971,8 +971,8 @@ packages:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
     dev: true
 
-  github.com/SharpCoder/webgl-engine/2cdafc5f2818470b723a953155043e34356d0be7:
-    resolution: {tarball: https://codeload.github.com/SharpCoder/webgl-engine/tar.gz/2cdafc5f2818470b723a953155043e34356d0be7}
+  github.com/SharpCoder/webgl-engine/9ccd77d117a95b66c2194b913e2994b04dfd57d5:
+    resolution: {tarball: https://codeload.github.com/SharpCoder/webgl-engine/tar.gz/9ccd77d117a95b66c2194b913e2994b04dfd57d5}
     name: webgl-engine
     version: 1.0.4
     dev: true

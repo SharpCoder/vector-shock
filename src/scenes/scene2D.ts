@@ -1,4 +1,5 @@
 import {
+    Default2DShader,
     DefaultShader,
     Flatten,
     Repeat,
@@ -9,11 +10,10 @@ import {
     zeros,
 } from 'webgl-engine';
 import type { Obj3d } from 'webgl-engine';
-import { DefaultShader2D } from '../shaders/default2DShader';
 
 export const DefaultScene2D = new Scene<unknown>({
     title: 'Default Scene',
-    shaders: [DefaultShader2D],
+    shaders: [Default2DShader],
     once: (engine) => {},
     update: (time, engine) => {},
     init: (engine) => {
@@ -21,6 +21,7 @@ export const DefaultScene2D = new Scene<unknown>({
         const { camera } = DefaultScene2D;
     },
     status: 'initializing',
+    components: 2,
 });
 
 const w = 200;
@@ -29,24 +30,10 @@ const h = 200;
 const rectangle: Obj3d = {
     name: 'rectangle',
     vertexes: rect2D(w, h),
-    colors: Flatten([
-        [253, 231, 37],
-        [253, 231, 37],
-        [253, 231, 37],
-        [255, 0, 128],
-        [255, 0, 128],
-        [255, 0, 128],
-    ]),
+    colors: Flatten([Repeat([255, 0, 255], 3), Repeat([0, 255, 255], 3)]),
     offsets: [-w / 2, -h / 2, 0],
     position: [200, 200, 0],
     rotation: [0, 0, 0],
-    texture: {
-        uri: 'assets/stick.png',
-        enabled: true,
-        repeat_horizontal: 'clamp_to_edge',
-        repeat_vertical: 'clamp_to_edge',
-    },
-    texcoords: rect2D(1, 1),
     update: (time, engine) => {
         const { gl } = engine;
         rectangle.rotation[0] += rads(time / 20);
