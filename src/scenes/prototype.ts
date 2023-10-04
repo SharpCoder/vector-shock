@@ -22,14 +22,12 @@ export const PrototypeScene = new Scene<unknown>({
         engine.settings.fogColor = FOG_COLOR;
 
         // Match the page with the fog color.
-        document.body.style.backgroundColor = `rgba(${engine.settings.fogColor
-            .slice(0, 3)
-            .map((x) => x * 256)},0.95)`;
+        document.body.style.backgroundColor = `rgba(${engine.settings.fogColor.map(
+            (x) => x * 220
+        )})`;
     },
     status: 'initializing',
     components: 2,
 });
 
-for (let i = 0; i < 20; i++) {
-    PrototypeScene.addObject(spawnPlayer());
-}
+PrototypeScene.addObject(spawnPlayer());
