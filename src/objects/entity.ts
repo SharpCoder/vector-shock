@@ -12,6 +12,7 @@ export class Entity implements WorldDrawable {
         vy: 0,
         targetVx: 0,
         accelerationY: 1,
+        movementDuration: 0,
     };
 
     name: string;

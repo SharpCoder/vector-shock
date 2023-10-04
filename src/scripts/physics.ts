@@ -46,8 +46,15 @@ export function applyPhysics(
                 Math.hypot(entity.physics.vx - entity.physics.targetVx) <
                 THRESHOLD
             ) {
+                entity.physics.movementDuration += time;
                 entity.physics.vx +=
                     (-Math.sign(entity.physics.vx) * FRICTION) / 2.25;
+            } else {
+                entity.physics.movementDuration = 0;
+            }
+
+            if (entity.physics.movementDuration > 10.0) {
+                entity.physics.vx = 0;
             }
 
             if (entity.physics.targetVx > THRESHOLD) {
