@@ -17,12 +17,26 @@
     }
 </script>
 
-<canvas id="canvas" bind:this={webglCanvas} />
+<div class="container">
+    <canvas id="canvas" bind:this={webglCanvas} />
+</div>
 
 <style>
-    #canvas {
-        width: 100%;
+    .container {
+        width: 80%;
         height: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        display: flex;
+        align-items: center;
         flex-grow: 1;
+    }
+
+    #canvas {
+        width: 80%;
+        max-width: 1960px;
+        aspect-ratio: 16 / 9;
+        margin-right: auto;
+        margin-left: auto;
     }
 </style>
