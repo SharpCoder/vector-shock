@@ -2,12 +2,13 @@ import type { Drawable, Engine, bbox, texture } from 'webgl-engine';
 
 interface WorldDrawable extends Drawable {
     applyPhysics: boolean;
+    collidable: boolean;
 }
 
 export class Entity implements WorldDrawable {
     applyPhysics: boolean;
+    collidable: boolean;
     physics = {
-        enabled: true,
         vx: 0,
         vy: 0,
         targetVx: 0,
@@ -37,6 +38,7 @@ export class Entity implements WorldDrawable {
 
     constructor({
         applyPhysics,
+        collidable,
         name,
         position,
         rotation,
@@ -53,12 +55,13 @@ export class Entity implements WorldDrawable {
         beforeDraw,
     }: WorldDrawable) {
         this.applyPhysics = applyPhysics;
+        this.collidable = collidable;
         this.name = name;
         this.position = position;
         this.rotation = rotation;
         this.offsets = offsets;
         this.vertexes = vertexes;
-        this.computeBbox = applyPhysics;
+        this.computeBbox = applyPhysics || collidable;
         this.children = children ?? [];
         this.texcoords = texcoords;
         this.texture = texture;

@@ -10,6 +10,7 @@ import type { Obj3d } from 'webgl-engine';
 import { FOG_COLOR } from '../constants';
 import { spawnPlayer } from '../objects/player';
 import { applyPhysics } from '../scripts/physics';
+import { spawnPlatform } from '../objects/platform';
 
 export const PrototypeScene = new Scene<unknown>({
     title: 'Prototype Scene',
@@ -31,3 +32,4 @@ export const PrototypeScene = new Scene<unknown>({
 });
 
 PrototypeScene.addObject(spawnPlayer());
+PrototypeScene.addObject(spawnPlatform(500, 300, 200, 10));
