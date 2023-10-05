@@ -1,4 +1,5 @@
-import type { Drawable, Scene } from 'webgl-engine';
+import type { Drawable, Engine, Scene } from 'webgl-engine';
+import type { Entity } from './objects/entity';
 
 export type vec2 = [number, number];
 export type vec3 = [number, number, number];
@@ -23,3 +24,9 @@ export function getScreenScale(gl: WebGLRenderingContext) {
     const scaleY = SCREEN_HEIGHT / gl.canvas.height;
     return [scaleX, scaleY];
 }
+
+export type ScriptFn = (
+    this: Entity,
+    time: number,
+    engine: Engine<unknown>
+) => void;

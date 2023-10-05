@@ -5,6 +5,7 @@ import { applyPhysics } from '../scripts/physics';
 import { spawnPlatform } from '../objects/platform';
 import { DefaultShader } from '../shaders/default';
 import { spawnRay } from '../objects/ray';
+import { shiftVisible } from '../scripts/shiftVisible';
 
 export const PrototypeScene = new Scene<unknown>({
     title: 'Prototype Scene',
@@ -25,8 +26,9 @@ export const PrototypeScene = new Scene<unknown>({
     components: 2,
 });
 
-const player = spawnPlayer();
-player.children.push(spawnRay(rads(90)));
+const ray = spawnRay(0, [shiftVisible]);
+const player = spawnPlayer({});
+player.children.push(ray);
 
 PrototypeScene.addObject(player);
 PrototypeScene.addObject(spawnPlatform(800, SCREEN_HEIGHT - 180, 200, 10));

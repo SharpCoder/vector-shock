@@ -1,8 +1,8 @@
-import { rect2D, Flatten, Repeat, rads } from 'webgl-engine';
+import { rect2D, Flatten, Repeat, rads, Engine } from 'webgl-engine';
 import { Entity } from './entity';
-import { INFINITY, getScreenScale } from '../constants';
+import { INFINITY, getScreenScale, type ScriptFn } from '../constants';
 
-export function spawnRay(theta: number): Entity {
+export function spawnRay(theta: number, scripts: ScriptFn[]): Entity {
     const thickness = 2;
 
     // The ray is technically projected until infinity,
@@ -13,12 +13,19 @@ export function spawnRay(theta: number): Entity {
         applyPhysics: false,
         collidable: false,
         computeBbox: true,
+        visible: false,
         vertexes: rect2D(INFINITY, thickness),
         colors: Flatten([Repeat([255, 0, 255], 6)]),
         offsets: [0, -thickness / 2, 0],
         position: [0, 0, 0],
         rotation: [-theta, 0, 0],
         update: function (time, engine) {
+            if (scripts) {
+                for (const script of scripts) {
+                    script.call(ray, time, engine);
+                }
+            }
+
             const { gl } = engine;
             if (!gl) return;
             if (!this._parent) return;

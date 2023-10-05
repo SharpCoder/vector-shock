@@ -1,8 +1,12 @@
-import { rect2D, Flatten, Repeat, zeros, rads } from 'webgl-engine';
+import { rect2D, Flatten, Repeat, zeros, rads, Engine } from 'webgl-engine';
 import { Entity } from './entity';
 import { processJump } from '../scripts/keyboard';
 
-export function spawnPlayer(): Entity {
+export type SpawnPlayerProps = {
+    update?: (time: number, engine: Engine<unknown>) => void;
+};
+
+export function spawnPlayer({ update }: SpawnPlayerProps): Entity {
     const w = 30;
     const h = 30;
 
@@ -17,6 +21,7 @@ export function spawnPlayer(): Entity {
         rotation: zeros(),
         update: function (time, engine) {
             processJump(player, engine);
+            update && update.call(player, time, engine);
         },
     });
 
