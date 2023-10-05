@@ -2,7 +2,6 @@
 
 import { m3, type ProgramTemplate } from 'webgl-engine';
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from '../constants';
-import { identity } from '../math';
 import type { Entity } from '../objects/entity';
 
 const default2DVertexShader = `

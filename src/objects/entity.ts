@@ -5,7 +5,6 @@ import {
     type bbox,
     type texture,
 } from 'webgl-engine';
-import { identity } from '../math';
 
 interface WorldDrawable extends Drawable {
     applyPhysics: boolean;
@@ -47,6 +46,7 @@ export class Entity implements WorldDrawable {
     constructor({
         applyPhysics,
         collidable,
+        computeBbox,
         name,
         position,
         rotation,
@@ -69,7 +69,7 @@ export class Entity implements WorldDrawable {
         this.rotation = rotation;
         this.offsets = offsets;
         this.vertexes = vertexes;
-        this.computeBbox = applyPhysics || collidable;
+        this.computeBbox = computeBbox || applyPhysics || collidable;
         this.children = children ?? [];
         this.texcoords = texcoords;
         this.texture = texture;
@@ -108,7 +108,7 @@ export class Entity implements WorldDrawable {
     getMatrix(): number[] {
         const parentMatrix: number[] = this._parent
             ? this._parent.getMatrix()
-            : identity();
+            : m3.identity();
 
         return m3.combine([
             parentMatrix,
