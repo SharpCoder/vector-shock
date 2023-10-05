@@ -7,7 +7,6 @@ export type vec4 = [number, number, number, number];
 export const FPS = 1000 / 60;
 export const FOG_COLOR = [0.15, 0.15, 0.15, 1] as vec4;
 
-export type PhysicsAttributes = {
-    vx: number;
-    vy: number;
-};
+// Whatever it is, keep it at a 16/9 aspect ratio
+export const SCREEN_WIDTH = 1200;
+export const SCREEN_HEIGHT = 675;

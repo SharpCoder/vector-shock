@@ -1,6 +1,6 @@
 import type { Engine, Scene, bbox } from 'webgl-engine';
 import type { Entity } from '../objects/entity';
-import { FPS } from '../constants';
+import { FPS, SCREEN_HEIGHT } from '../constants';
 
 export const MAX_VEL_Y = 50;
 export const MAX_VEL_X = 4;
@@ -12,9 +12,9 @@ const DECAY = 0.25;
 function getRect(box: bbox) {
     return {
         x0: box.x,
-        x1: box.x - box.h,
+        x1: box.x - box.w,
         y0: box.y,
-        y1: box.y - box.w,
+        y1: box.y - box.h,
     };
 }
 
@@ -23,8 +23,8 @@ function colliding(a: Entity, b: Entity) {
     if (!b._bbox) return false;
     if (a === b) return false;
 
-    const ra = getRect(a._bbox);
-    const rb = getRect(b._bbox);
+    const ra = getRect(a.getBbox());
+    const rb = getRect(b.getBbox());
 
     return (
         (ra.x1 > rb.x0 && ra.x0 < rb.x1 && ra.y0 < rb.y0 && ra.y0 > rb.y1) ||
@@ -40,7 +40,7 @@ export function applyPhysics(
     const { gl } = engine;
     if (!gl) return;
 
-    const screenHeight = gl.canvas.height;
+    const screenHeight = SCREEN_HEIGHT;
 
     const collidables = scene.objects.filter(
         (obj) => (obj as Entity).collidable
@@ -70,7 +70,6 @@ export function applyPhysics(
             }
 
             // Sneaky friction
-            // TODO: Not this
             if (
                 Math.hypot(entity.physics.vx - entity.physics.targetVx) <
                 THRESHOLD
@@ -109,6 +108,8 @@ export function applyPhysics(
             entity.position[0] += entity.physics.vx * 2;
             entity.position[1] -= entity.physics.vy;
 
+            // Do collision
+            // TODO: This is not going to work for walls
             const collidedWith = collidables
                 .filter((x) => x != obj)
                 .filter(
@@ -128,7 +129,6 @@ export function applyPhysics(
 
             // Collision with the floor
             const h = Math.abs(obj._bbox?.h ?? 0);
-            console.log(entity.position[0], entity.position[1]);
             if (entity.position[1] > screenHeight - h / 2) {
                 entity.position[1] = screenHeight - h / 2;
                 entity.physics.vy = 0;

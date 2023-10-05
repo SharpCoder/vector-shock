@@ -1,5 +1,5 @@
 import { Scene } from 'webgl-engine';
-import { FOG_COLOR } from '../constants';
+import { FOG_COLOR, SCREEN_HEIGHT } from '../constants';
 import { spawnPlayer } from '../objects/player';
 import { applyPhysics } from '../scripts/physics';
 import { spawnPlatform } from '../objects/platform';
@@ -25,4 +25,4 @@ export const PrototypeScene = new Scene<unknown>({
 });
 
 PrototypeScene.addObject(spawnPlayer());
-PrototypeScene.addObject(spawnPlatform(500, 300, 200, 10));
+PrototypeScene.addObject(spawnPlatform(800, SCREEN_HEIGHT - 180, 200, 10));

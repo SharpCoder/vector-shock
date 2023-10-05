@@ -72,4 +72,28 @@ export class Entity implements WorldDrawable {
         this.update = update;
         this.beforeDraw = beforeDraw;
     }
+
+    getBbox(): bbox {
+        if (!this._bbox) {
+            return {
+                x: 0,
+                y: 0,
+                z: 0,
+                w: 0,
+                h: 0,
+                d: 0,
+            };
+        } else {
+            const bbox = this._bbox;
+            // The 3D coordinate plane has some attributes reversed.
+            return {
+                x: bbox.x,
+                y: bbox.y,
+                z: 0,
+                w: bbox.h,
+                h: bbox.w,
+                d: 0,
+            };
+        }
+    }
 }

@@ -1,6 +1,7 @@
 // @ts-nocheck
 
 import { m3, type ProgramTemplate } from 'webgl-engine';
+import { SCREEN_HEIGHT, SCREEN_WIDTH } from '../constants';
 
 const default2DVertexShader = `
     attribute vec2 a_position;
@@ -85,7 +86,7 @@ export const PrimaryShader: ProgramTemplate = {
             gl.uniformMatrix3fv(
                 loc,
                 false,
-                m3.projection(gl.canvas.width, -gl.canvas.height)
+                m3.projection(SCREEN_WIDTH, -SCREEN_HEIGHT)
             );
         },
         u_camera: (engine, loc) => {
