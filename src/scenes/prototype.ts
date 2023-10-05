@@ -1,9 +1,10 @@
-import { Scene } from 'webgl-engine';
+import { Scene, rads } from 'webgl-engine';
 import { FOG_COLOR, SCREEN_HEIGHT } from '../constants';
 import { spawnPlayer } from '../objects/player';
 import { applyPhysics } from '../scripts/physics';
 import { spawnPlatform } from '../objects/platform';
 import { DefaultShader } from '../shaders/default';
+import { spawnRay } from '../objects/ray';
 
 export const PrototypeScene = new Scene<unknown>({
     title: 'Prototype Scene',
@@ -24,5 +25,8 @@ export const PrototypeScene = new Scene<unknown>({
     components: 2,
 });
 
-PrototypeScene.addObject(spawnPlayer());
+const player = spawnPlayer();
+player.children.push(spawnRay(rads(90)));
+
+PrototypeScene.addObject(player);
 PrototypeScene.addObject(spawnPlatform(800, SCREEN_HEIGHT - 180, 200, 10));

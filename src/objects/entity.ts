@@ -1,4 +1,11 @@
-import type { Drawable, Engine, bbox, texture } from 'webgl-engine';
+import {
+    m3,
+    type Drawable,
+    type Engine,
+    type bbox,
+    type texture,
+} from 'webgl-engine';
+import { identity } from '../math';
 
 interface WorldDrawable extends Drawable {
     applyPhysics: boolean;
@@ -29,6 +36,7 @@ export class Entity implements WorldDrawable {
     visible?: boolean;
     scale?: [number, number, number];
     additionalMatrix?: number[];
+    _parent?: Entity;
     _bbox?: bbox;
     _computed?: {
         positionMatrix: number[];
@@ -95,5 +103,19 @@ export class Entity implements WorldDrawable {
                 d: 0,
             };
         }
+    }
+
+    getMatrix(): number[] {
+        const parentMatrix: number[] = this._parent
+            ? this._parent.getMatrix()
+            : identity();
+
+        return m3.combine([
+            parentMatrix,
+            m3.translate(this.position[0], -this.position[1]),
+            m3.rotate(this.rotation[0]),
+            m3.scale(this.scale?.[0] ?? 1, this.scale?.[1] ?? 1),
+            m3.translate(this.offsets[0], this.offsets[1]),
+        ]);
     }
 }

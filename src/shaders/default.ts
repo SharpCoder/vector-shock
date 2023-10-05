@@ -2,6 +2,8 @@
 
 import { m3, type ProgramTemplate } from 'webgl-engine';
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from '../constants';
+import { identity } from '../math';
+import type { Entity } from '../objects/entity';
 
 const default2DVertexShader = `
     attribute vec2 a_position;
@@ -140,25 +142,18 @@ export const DefaultShader: ProgramTemplate = {
         },
         u_mat: (engine, loc, obj) => {
             const { gl } = engine;
-
-            gl.uniformMatrix3fv(
-                loc,
-                false,
-                m3.combine([
-                    m3.translate(obj.position[0], -obj.position[1]),
-                    m3.rotate(obj.rotation[0], obj.rotation[1]),
-                    m3.scale(
-                        obj.scales?.[0] ?? 1,
-                        obj.scales?.[1] ?? 1,
-                        obj.scales?.[2] ?? 1
-                    ),
-                    m3.translate(
-                        obj.offsets[0],
-                        obj.offsets[1],
-                        obj.offsets[2]
-                    ),
-                ])
-            );
+            const entity = obj as Entity;
+            if (entity.getMatrix) {
+                gl.uniformMatrix3fv(
+                    loc,
+                    false,
+                    m3.combine([entity.getMatrix()])
+                );
+            } else {
+                console.error(
+                    `Drawable ${obj.name} is not a proper entity type`
+                );
+            }
         },
     },
 };
