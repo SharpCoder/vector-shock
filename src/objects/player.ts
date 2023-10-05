@@ -13,7 +13,7 @@ export function spawnPlayer(): Entity {
         vertexes: rect2D(w, h),
         colors: Flatten([Repeat([255, 0, 255], 3), Repeat([0, 255, 255], 3)]),
         offsets: [-w / 2, -h / 2, 0],
-        position: [200, 300, 0],
+        position: [50, 150, 0],
         rotation: zeros(),
         update: function (time, engine) {
             processJump(player, engine);

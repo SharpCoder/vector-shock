@@ -3,7 +3,7 @@ import type { Entity } from '../objects/entity';
 import { FPS } from '../constants';
 
 export const MAX_VEL_Y = 50;
-export const MAX_VEL_X = 12;
+export const MAX_VEL_X = 4;
 const ACCELERATION = 3.0;
 const FRICTION = 0.35;
 const THRESHOLD = FRICTION;
@@ -39,6 +39,8 @@ export function applyPhysics(
 ) {
     const { gl } = engine;
     if (!gl) return;
+
+    const screenHeight = gl.canvas.height;
 
     const collidables = scene.objects.filter(
         (obj) => (obj as Entity).collidable
@@ -104,7 +106,7 @@ export function applyPhysics(
             );
 
             // Do the physics
-            entity.position[0] += entity.physics.vx;
+            entity.position[0] += entity.physics.vx * 2;
             entity.position[1] -= entity.physics.vy;
 
             const collidedWith = collidables
@@ -126,8 +128,9 @@ export function applyPhysics(
 
             // Collision with the floor
             const h = Math.abs(obj._bbox?.h ?? 0);
-            if (entity.position[1] > gl.canvas.height - h / 2) {
-                entity.position[1] = gl.canvas.height - h / 2;
+            console.log(entity.position[0], entity.position[1]);
+            if (entity.position[1] > screenHeight - h / 2) {
+                entity.position[1] = screenHeight - h / 2;
                 entity.physics.vy = 0;
                 entity.physics.accelerationY = 1;
             }

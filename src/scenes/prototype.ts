@@ -1,20 +1,13 @@
-import {
-    Default2DShader,
-    Flatten,
-    Repeat,
-    Scene,
-    rads,
-    rect2D,
-} from 'webgl-engine';
-import type { Obj3d } from 'webgl-engine';
+import { Scene } from 'webgl-engine';
 import { FOG_COLOR } from '../constants';
 import { spawnPlayer } from '../objects/player';
 import { applyPhysics } from '../scripts/physics';
 import { spawnPlatform } from '../objects/platform';
+import { PrimaryShader } from '../shaders/primary';
 
 export const PrototypeScene = new Scene<unknown>({
     title: 'Prototype Scene',
-    shaders: [Default2DShader],
+    shaders: [PrimaryShader],
     once: (engine) => {},
     update: function (time, engine) {
         applyPhysics(time, PrototypeScene, engine);

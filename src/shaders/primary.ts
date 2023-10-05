@@ -2,7 +2,7 @@
 
 import { m3, type ProgramTemplate } from 'webgl-engine';
 
-const vertexShader = `
+const default2DVertexShader = `
     attribute vec2 a_position;
     attribute vec4 a_color;
     attribute vec2 a_texcoord;
@@ -21,7 +21,7 @@ const vertexShader = `
     }
 `;
 
-const fragmentShader = `
+const default2DFragmentShader = `
     precision mediump float;
     varying vec4 v_color;
     varying vec2 v_texcoord;
@@ -51,8 +51,8 @@ export const PrimaryShader: ProgramTemplate = {
         depthFunc: gl?.LESS,
         mode: gl?.TRIANGLES,
     },
-    vertexShader,
-    fragmentShader,
+    vertexShader: default2DVertexShader,
+    fragmentShader: default2DFragmentShader,
     attributes: {
         a_color: {
             components: 3,
@@ -85,10 +85,7 @@ export const PrimaryShader: ProgramTemplate = {
             gl.uniformMatrix3fv(
                 loc,
                 false,
-                m3.combine([
-                    m3.projection(gl.canvas.width, -gl.canvas.height),
-                    m3.translate(0, -gl.canvas.height),
-                ])
+                m3.projection(gl.canvas.width, -gl.canvas.height)
             );
         },
         u_camera: (engine, loc) => {
@@ -142,24 +139,18 @@ export const PrimaryShader: ProgramTemplate = {
         },
         u_mat: (engine, loc, obj) => {
             const { gl } = engine;
-            const scaleX = gl.canvas.width / 1600;
-            const scaleY = gl.canvas.height / 900;
 
             gl.uniformMatrix3fv(
                 loc,
                 false,
                 m3.combine([
-                    m3.translate(
-                        obj.position[0] * scaleX,
-                        obj.position[1] * scaleY
-                    ),
+                    m3.translate(obj.position[0], -obj.position[1]),
                     m3.rotate(obj.rotation[0], obj.rotation[1]),
                     m3.scale(
                         obj.scales?.[0] ?? 1,
                         obj.scales?.[1] ?? 1,
                         obj.scales?.[2] ?? 1
                     ),
-                    m3.translate(scaleX, scaleY),
                     m3.translate(
                         obj.offsets[0],
                         obj.offsets[1],
