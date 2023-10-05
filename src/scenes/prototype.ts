@@ -32,4 +32,3 @@ player.children.push(ray);
 
 PrototypeScene.addObject(player);
 PrototypeScene.addObject(spawnPlatform(800, SCREEN_HEIGHT - 180, 200, 6));
-PrototypeScene.addObject(spawnPlatform(80, SCREEN_HEIGHT - 400, 6, 400));
