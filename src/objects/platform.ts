@@ -9,7 +9,7 @@ export function spawnPlatform(
     h: number
 ): Entity {
     const platform = new Entity({
-        name: 'platform',
+        name: `platform_${w}_${h}`,
         applyPhysics: false,
         collidable: true,
         vertexes: rect2D(w, h),
