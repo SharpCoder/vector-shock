@@ -29,6 +29,5 @@ export const PrototypeScene = new Scene<unknown>({
 const ray = spawnRay(0, [shiftVisible]);
 const player = spawnPlayer({});
 player.children.push(ray);
-
 PrototypeScene.addObject(player);
 PrototypeScene.addObject(spawnPlatform(800, SCREEN_HEIGHT - 180, 200, 6));

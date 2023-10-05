@@ -35,6 +35,7 @@ export class Entity implements WorldDrawable {
     visible?: boolean;
     scale?: [number, number, number];
     additionalMatrix?: number[];
+    zIndex?: number;
     _parent?: Entity;
     _bbox?: bbox;
     _computed?: {
@@ -59,6 +60,7 @@ export class Entity implements WorldDrawable {
         visible,
         scale,
         additionalMatrix,
+        zIndex,
         update,
         beforeDraw,
     }: WorldDrawable) {
@@ -77,6 +79,7 @@ export class Entity implements WorldDrawable {
         this.visible = visible;
         this.scale = scale;
         this.additionalMatrix = additionalMatrix;
+        this.zIndex = zIndex ?? 0;
         this.update = update;
         this.beforeDraw = beforeDraw;
     }

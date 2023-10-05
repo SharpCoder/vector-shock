@@ -19,6 +19,7 @@ export function spawnRay(theta: number, scripts: ScriptFn[]): Entity {
         offsets: [0, -thickness / 2, 0],
         position: [0, 0, 0],
         rotation: [-theta, 0, 0],
+        zIndex: -1,
         update: function (time, engine) {
             if (scripts) {
                 for (const script of scripts) {
