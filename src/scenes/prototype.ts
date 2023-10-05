@@ -3,11 +3,11 @@ import { FOG_COLOR, SCREEN_HEIGHT } from '../constants';
 import { spawnPlayer } from '../objects/player';
 import { applyPhysics } from '../scripts/physics';
 import { spawnPlatform } from '../objects/platform';
-import { PrimaryShader } from '../shaders/primary';
+import { DefaultShader } from '../shaders/default';
 
 export const PrototypeScene = new Scene<unknown>({
     title: 'Prototype Scene',
-    shaders: [PrimaryShader],
+    shaders: [DefaultShader],
     once: (engine) => {},
     update: function (time, engine) {
         applyPhysics(time, PrototypeScene, engine);

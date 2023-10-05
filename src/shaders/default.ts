@@ -44,7 +44,7 @@ const gl = document
     .createElement('canvas')
     .getContext('webgl') as WebGLRenderingContext;
 
-export const PrimaryShader: ProgramTemplate = {
+export const DefaultShader: ProgramTemplate = {
     name: 'default',
     order: 0,
     objectDrawArgs: {

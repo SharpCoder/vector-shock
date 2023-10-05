@@ -105,7 +105,7 @@ export function applyPhysics(
             );
 
             // Do the physics
-            entity.position[0] += entity.physics.vx * 2;
+            entity.position[0] += entity.physics.vx * 2.25;
             entity.position[1] -= entity.physics.vy;
 
             // Do collision
@@ -128,7 +128,7 @@ export function applyPhysics(
             }
 
             // Collision with the floor
-            const h = Math.abs(obj._bbox?.h ?? 0);
+            const h = Math.abs(entity.getBbox().h ?? 0);
             if (entity.position[1] > screenHeight - h / 2) {
                 entity.position[1] = screenHeight - h / 2;
                 entity.physics.vy = 0;
