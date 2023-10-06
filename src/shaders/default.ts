@@ -50,7 +50,7 @@ export const DefaultShader: ProgramTemplate = {
     order: 0,
     objectDrawArgs: {
         components: 2,
-        depthFunc: gl?.LESS,
+        depthFunc: gl?.ALWAYS,
         mode: gl?.TRIANGLES,
     },
     vertexShader: default2DVertexShader,

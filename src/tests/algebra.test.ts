@@ -30,6 +30,28 @@ test('Algebra - Intercept', () => {
     };
 
     const intercept = lineIntersection(line1, line2);
-    expect(intercept.x).toBe(1.6);
-    expect(intercept.y).toBe(6.2);
+    expect(intercept).toBeDefined();
+    if (intercept) {
+        expect(intercept.x).toBe(1.6);
+        expect(intercept.y).toBe(6.2);
+    }
+});
+
+test('Algebra - Horizontal Intercept', () => {
+    const line1: LineInterceptFormula = {
+        m: 1,
+        b: 0,
+    };
+
+    const line2: LineInterceptFormula = {
+        m: 0,
+        b: 600,
+    };
+
+    const intercept = lineIntersection(line1, line2);
+    expect(intercept).toBeDefined();
+    if (intercept) {
+        expect(intercept.x).toBe(600);
+        expect(intercept.y).toBe(600);
+    }
 });

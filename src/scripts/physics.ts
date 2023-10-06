@@ -1,6 +1,7 @@
 import type { Engine, Scene, bbox } from 'webgl-engine';
 import type { Entity } from '../objects/entity';
 import { FPS, SCREEN_HEIGHT } from '../constants';
+import type { Rect } from '../algebra';
 
 export const MAX_VEL_Y = 50;
 export const MAX_VEL_X = 4;
@@ -9,10 +10,10 @@ const FRICTION = 0.35;
 const THRESHOLD = FRICTION;
 const DECAY = 0.25;
 
-function getRect(box: bbox) {
+function getRect(box: Rect) {
     return {
         x0: box.x,
-        x1: box.x - box.w,
+        x1: box.x + box.w,
         y0: box.y,
         y1: box.y - box.h,
     };

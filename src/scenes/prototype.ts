@@ -26,8 +26,9 @@ export const PrototypeScene = new Scene<unknown>({
     components: 2,
 });
 
-const ray = spawnRay(0, [shiftVisible]);
+const [ray, tracker] = spawnRay(0, [shiftVisible]);
 const player = spawnPlayer({});
 player.children.push(ray);
 PrototypeScene.addObject(player);
+PrototypeScene.addObject(tracker);
 PrototypeScene.addObject(spawnPlatform(800, SCREEN_HEIGHT - 180, 200, 6));

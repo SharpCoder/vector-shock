@@ -5,6 +5,7 @@ import {
     type bbox,
     type texture,
 } from 'webgl-engine';
+import { makeLine, type Line, fixRect, type Rect } from '../algebra';
 
 interface WorldDrawable extends Drawable {
     applyPhysics: boolean;
@@ -84,28 +85,29 @@ export class Entity implements WorldDrawable {
         this.beforeDraw = beforeDraw;
     }
 
-    getBbox(): bbox {
+    getBbox(): Rect {
         if (!this._bbox) {
             return {
                 x: 0,
                 y: 0,
-                z: 0,
                 w: 0,
                 h: 0,
-                d: 0,
             };
         } else {
             const bbox = this._bbox;
             // The 3D coordinate plane has some attributes reversed.
-            return {
+            return fixRect({
                 x: bbox.x,
                 y: bbox.y,
-                z: 0,
-                w: bbox.h,
+                w: -bbox.h,
                 h: bbox.w,
-                d: 0,
-            };
+            });
         }
+    }
+
+    getLine(): Line {
+        const bbox = fixRect(this.getBbox());
+        return makeLine(bbox.x, bbox.y, bbox.x + bbox.w, bbox.y);
     }
 
     getMatrix(): number[] {
