@@ -10,6 +10,7 @@ import { makeLine, type Line, fixRect, type Rect } from '../algebra';
 interface WorldDrawable extends Drawable {
     applyPhysics: boolean;
     collidable: boolean;
+    reflectionAngle?: number;
 }
 
 export class Entity implements WorldDrawable {
@@ -37,6 +38,7 @@ export class Entity implements WorldDrawable {
     scale?: [number, number, number];
     additionalMatrix?: number[];
     zIndex?: number;
+    reflectionAngle?: number;
     _parent?: Entity;
     _bbox?: bbox;
     _computed?: {
@@ -48,6 +50,7 @@ export class Entity implements WorldDrawable {
     constructor({
         applyPhysics,
         collidable,
+        reflectionAngle,
         computeBbox,
         name,
         position,
@@ -80,6 +83,7 @@ export class Entity implements WorldDrawable {
         this.visible = visible;
         this.scale = scale;
         this.additionalMatrix = additionalMatrix;
+        this.reflectionAngle = reflectionAngle;
         this.zIndex = zIndex ?? 0;
         this.update = update;
         this.beforeDraw = beforeDraw;

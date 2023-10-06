@@ -4,15 +4,16 @@ import { spawnPlayer } from '../objects/player';
 import { applyPhysics } from '../scripts/physics';
 import { spawnPlatform } from '../objects/platform';
 import { DefaultShader } from '../shaders/default';
-import { spawnRay } from '../objects/ray';
-import { shiftVisible } from '../scripts/shiftVisible';
+import { applyRayTracing } from '../scripts/raytracing';
 
+const player = spawnPlayer({});
 export const PrototypeScene = new Scene<unknown>({
     title: 'Prototype Scene',
     shaders: [DefaultShader],
     once: (engine) => {},
     update: function (time, engine) {
         applyPhysics(time, PrototypeScene, engine);
+        applyRayTracing(player, PrototypeScene, engine);
     },
     init: (engine) => {
         engine.settings.fogColor = FOG_COLOR;
@@ -26,9 +27,8 @@ export const PrototypeScene = new Scene<unknown>({
     components: 2,
 });
 
-const [ray, tracker] = spawnRay(0, [shiftVisible]);
-const player = spawnPlayer({});
-player.children.push(ray);
 PrototypeScene.addObject(player);
-PrototypeScene.addObject(tracker);
-PrototypeScene.addObject(spawnPlatform(800, SCREEN_HEIGHT - 180, 200, 6));
+PrototypeScene.addObject(
+    spawnPlatform(600, SCREEN_HEIGHT - 180, 200, 5, rads(20))
+);
+PrototypeScene.addObject(spawnPlatform(800, SCREEN_HEIGHT - 400, 200, 5));

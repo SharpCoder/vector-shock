@@ -11,6 +11,10 @@ export type Line = {
 export type LineInterceptFormula = {
     m: number;
     b: number;
+    meta: {
+        p1: Point;
+        p2: Point;
+    };
 };
 
 export type Rect = {
@@ -67,6 +71,10 @@ export function convertToInterceptFormula(line: Line): LineInterceptFormula {
     return {
         m,
         b: line.p1.y - m * line.p1.x,
+        meta: {
+            p1: line.p1,
+            p2: line.p2,
+        },
     };
 }
 

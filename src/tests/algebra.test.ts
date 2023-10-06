@@ -6,6 +6,17 @@ import {
     lineIntersection,
 } from '../algebra';
 
+const BLANK_META = {
+    p1: {
+        x: 0,
+        y: 0,
+    },
+    p2: {
+        x: 0,
+        y: 0,
+    },
+};
+
 test('Algebra - Line Slop Formula', () => {
     const line = makeLine(3, 3, 4, 1);
     const formula = convertToInterceptFormula(line);
@@ -22,11 +33,13 @@ test('Algebra - Intercept', () => {
     const line1: LineInterceptFormula = {
         m: 2,
         b: 3,
+        meta: BLANK_META,
     };
 
     const line2: LineInterceptFormula = {
         m: -0.5,
         b: 7,
+        meta: BLANK_META,
     };
 
     const intercept = lineIntersection(line1, line2);
@@ -41,11 +54,13 @@ test('Algebra - Horizontal Intercept', () => {
     const line1: LineInterceptFormula = {
         m: 1,
         b: 0,
+        meta: BLANK_META,
     };
 
     const line2: LineInterceptFormula = {
         m: 0,
         b: 600,
+        meta: BLANK_META,
     };
 
     const intercept = lineIntersection(line1, line2);
