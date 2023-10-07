@@ -28,7 +28,8 @@ export const PrototypeScene = new Scene<unknown>({
 });
 
 PrototypeScene.addObject(player);
-PrototypeScene.addObject(
-    spawnPlatform(600, SCREEN_HEIGHT - 180, 200, 5, rads(20))
-);
+PrototypeScene.addObject(spawnPlatform(600, SCREEN_HEIGHT - 180, 200, 5));
 PrototypeScene.addObject(spawnPlatform(800, SCREEN_HEIGHT - 400, 200, 5));
+PrototypeScene.addObject(
+    spawnPlatform(20, SCREEN_HEIGHT / 2, 5, SCREEN_HEIGHT)
+);

@@ -4,9 +4,12 @@ import {
     makeLine,
     type LineInterceptFormula,
     lineIntersection,
+    type Line,
+    type Point,
 } from '../algebra';
 
 const BLANK_META = {
+    type: 'normal',
     p1: {
         x: 0,
         y: 0,
@@ -15,6 +18,10 @@ const BLANK_META = {
         x: 0,
         y: 0,
     },
+} as {
+    type: 'normal' | 'vertical';
+    p1: Point;
+    p2: Point;
 };
 
 test('Algebra - Line Slop Formula', () => {

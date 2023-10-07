@@ -12,6 +12,7 @@ export type LineInterceptFormula = {
     m: number;
     b: number;
     meta: {
+        type: 'vertical' | 'normal';
         p1: Point;
         p2: Point;
     };
@@ -67,11 +68,13 @@ export function makeLine(x1: number, y1: number, x2: number, y2: number): Line {
 }
 
 export function convertToInterceptFormula(line: Line): LineInterceptFormula {
+    const vertical = line.p2.x === line.p1.x;
     const m = (line.p2.y - line.p1.y) / (line.p2.x - line.p1.x);
     return {
         m,
         b: line.p1.y - m * line.p1.x,
         meta: {
+            type: vertical ? 'vertical' : 'normal',
             p1: line.p1,
             p2: line.p2,
         },

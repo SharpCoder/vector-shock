@@ -6,14 +6,12 @@ export function spawnPlatform(
     x: number,
     y: number,
     w: number,
-    h: number,
-    reflectionAngle?: number
+    h: number
 ): Entity {
     const platform = new Entity({
         name: `platform_${w}_${h}`,
         applyPhysics: false,
         collidable: true,
-        reflectionAngle,
         vertexes: rect2D(w, h),
         colors: Flatten([Repeat([204, 255, 0], 6)]),
         offsets: [-w / 2, -h / 2, 0],

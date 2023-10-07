@@ -69,6 +69,7 @@ export function applyRayTracing(
             let dist = INFINITY;
             let hitEntity = undefined;
             let finalIntercept = undefined;
+            let finalLine = undefined;
 
             const rayEntity = RAY_ENTITIES[rayIndex];
 
@@ -76,22 +77,28 @@ export function applyRayTracing(
                 if (obj === rayEntity) continue;
                 if (obj === player) continue;
 
-                const objLine = convertToInterceptFormula(obj.getLine());
-                const intercept = lineIntersection(ray, objLine);
-                if (
-                    intercept &&
-                    pointInRect(intercept, obj.getBbox()) &&
-                    Math.sign(targetY - oy) === Math.sign(intercept.y - oy)
-                ) {
-                    const nextDist = Math.min(
-                        dist,
-                        Math.hypot(intercept.x - ox, intercept.y - oy)
-                    );
+                const objLines = obj.getLines();
+                // Calculate the ray against each line segment that comprises this entity.
+                for (const line of objLines) {
+                    const objLine = convertToInterceptFormula(line);
+                    const intercept = lineIntersection(ray, objLine);
 
-                    if (nextDist < dist) {
-                        dist = nextDist;
-                        hitEntity = obj;
-                        finalIntercept = intercept;
+                    if (
+                        intercept &&
+                        pointInRect(intercept, obj.getBbox()) &&
+                        Math.sign(targetY - oy) === Math.sign(intercept.y - oy)
+                    ) {
+                        const nextDist = Math.min(
+                            dist,
+                            Math.hypot(intercept.x - ox, intercept.y - oy)
+                        );
+
+                        if (nextDist < dist) {
+                            dist = nextDist;
+                            hitEntity = obj;
+                            finalIntercept = intercept;
+                            finalLine = objLine;
+                        }
                     }
                 }
             }
@@ -103,27 +110,23 @@ export function applyRayTracing(
             rayEntity.visible = true;
 
             // If the target that was hit is reflective, duplciate the ray!
-            if (hitEntity?.reflectionAngle && finalIntercept) {
-                let baseAngle = -hitEntity.reflectionAngle;
-                if (Math.sign(ray.m) >= 0) {
-                    baseAngle -= 90;
-                }
-
-                // Calculate the next
+            if (hitEntity && finalIntercept && finalLine) {
                 const mat = m3.combine([
-                    m3.translate(finalIntercept.x, finalIntercept.y),
-                    m3.rotate(rads(baseAngle)),
-                    m3.translate(finalIntercept.x, finalIntercept.y),
+                    m3.translate(ox, oy),
+                    m3.translate(ox, oy),
                 ]);
 
+                const a = Math.max(ox, finalIntercept.x);
+                const b = Math.min(ox, finalIntercept.x);
+
+                targetX = finalIntercept.x + -Math.sign(ray.m) * (a - b) * 4;
                 ox = finalIntercept.x;
                 oy = finalIntercept.y;
-                targetX = mat[6];
                 targetY = mat[7];
 
                 rays.push(
                     convertToInterceptFormula(
-                        makeLine(ox, oy, targetX, targetY)
+                        makeLine(finalIntercept.x, oy, targetX, oy)
                     )
                 );
             }
