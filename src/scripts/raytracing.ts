@@ -18,10 +18,12 @@ import {
     makeLine,
     pointInRect,
     type Point,
+    type LineInterceptFormula,
 } from '../algebra';
 
 const RAY_ENTITIES: Record<number, Entity> = {};
 const RAY_THICKNESS = 2;
+const MAX_RAYS = 20;
 
 // The responsibility of this script is to render one or more rays to the map based on
 // the angle which the player is aiming, and whether the raytracing button is actively
@@ -36,6 +38,7 @@ export function applyRayTracing(
     for (const obj of Object.values(RAY_ENTITIES)) {
         obj.visible = false;
     }
+    const DEBUG_INFO: Record<number, any> = {};
 
     const { gl } = engine;
     if (!gl) return;
@@ -52,13 +55,13 @@ export function applyRayTracing(
     let targetY = engine.mouseOffsetY * scaleY;
 
     // Calculate the dist of the ray
-    const rays = [];
+    const rays: LineInterceptFormula[] = [];
 
     // Add the first ray to the list
     rays.push(convertToInterceptFormula(makeLine(ox, oy, targetX, targetY)));
 
     let rayIndex = 0;
-    while (rays.length > 0 && rayIndex < 10) {
+    while (rays.length > 0 && rayIndex < MAX_RAYS) {
         const ray = rays.pop();
         if (ray) {
             if (RAY_ENTITIES[rayIndex] === undefined) {
@@ -86,6 +89,7 @@ export function applyRayTracing(
             for (const obj of scene.objects as Entity[]) {
                 if (obj === rayEntity) continue;
                 if (obj === player) continue;
+                if (!obj.collidable) continue;
 
                 const objLines = obj.getLines();
                 // Calculate the ray against each line segment that comprises this entity.
@@ -127,7 +131,7 @@ export function applyRayTracing(
                 const vert = finalLine.meta.type === 'vertical';
                 const mat = m3.combine([
                     m3.translate(ox, oy),
-                    m3.rotate(vert ? rads(180) : 0),
+                    m3.rotate(vert ? Math.sign(ray.m) * rads(180) : 0),
                     m3.translate(ox, oy),
                 ]);
 
@@ -144,9 +148,13 @@ export function applyRayTracing(
                 ox = finalIntercept.x;
                 oy = finalIntercept.y;
 
+                DEBUG_INFO[rayIndex] = {
+                    ray,
+                };
+
                 rays.push(
                     convertToInterceptFormula(
-                        makeLine(finalIntercept.x, oy, targetX, oy)
+                        makeLine(ox, oy, targetX, targetY)
                     )
                 );
             }
@@ -155,6 +163,8 @@ export function applyRayTracing(
             rayIndex += 1;
         }
     }
+
+    console.log(DEBUG_INFO);
 }
 
 function createLine(index: number): Entity {
