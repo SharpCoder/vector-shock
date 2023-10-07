@@ -114,7 +114,7 @@ export class Entity implements WorldDrawable {
         const bbox = this.getBbox();
         return [
             makeLine(bbox.x, bbox.y, bbox.x + bbox.w, bbox.y),
-            makeLine(bbox.x, bbox.y, bbox.x, bbox.y - bbox.h),
+            makeLine(bbox.x, bbox.y - bbox.h, bbox.x, bbox.y),
         ];
     }
 

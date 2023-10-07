@@ -49,8 +49,8 @@ export function pointInRect(p: Point, rect: Rect): boolean {
     return (
         p.x >= rect.x &&
         p.x <= rect.x + rect.w &&
-        p.y >= rect.y &&
-        p.y <= rect.y + rect.h
+        p.y >= rect.y - rect.h &&
+        p.y <= rect.y
     );
 }
 
@@ -69,16 +69,29 @@ export function makeLine(x1: number, y1: number, x2: number, y2: number): Line {
 
 export function convertToInterceptFormula(line: Line): LineInterceptFormula {
     const vertical = line.p2.x === line.p1.x;
-    const m = (line.p2.y - line.p1.y) / (line.p2.x - line.p1.x);
-    return {
-        m,
-        b: line.p1.y - m * line.p1.x,
-        meta: {
-            type: vertical ? 'vertical' : 'normal',
-            p1: line.p1,
-            p2: line.p2,
-        },
-    };
+    if (vertical) {
+        const m = (line.p2.x - line.p1.x) / (line.p2.y - line.p1.y);
+        return {
+            m,
+            b: line.p1.x - m * line.p1.y,
+            meta: {
+                type: 'vertical',
+                p1: line.p1,
+                p2: line.p2,
+            },
+        };
+    } else {
+        const m = (line.p2.y - line.p1.y) / (line.p2.x - line.p1.x);
+        return {
+            m,
+            b: line.p1.y - m * line.p1.x,
+            meta: {
+                type: 'normal',
+                p1: line.p1,
+                p2: line.p2,
+            },
+        };
+    }
 }
 
 export function lineIntersection(
@@ -92,8 +105,15 @@ export function lineIntersection(
         return undefined;
     }
 
-    return {
-        x: round(xIntercept),
-        y: round(yIntercept),
-    };
+    if (line2.meta.type === 'vertical') {
+        return {
+            x: round(yIntercept),
+            y: round(xIntercept),
+        };
+    } else {
+        return {
+            x: round(xIntercept),
+            y: round(yIntercept),
+        };
+    }
 }

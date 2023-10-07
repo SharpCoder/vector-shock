@@ -65,6 +65,16 @@ export function applyRayTracing(
                 RAY_ENTITIES[rayIndex] = createLine(rayIndex);
             }
 
+            // Create a vertical ray also, for some code paths
+            const verticalRay = convertToInterceptFormula(
+                makeLine(
+                    ray.meta.p1.y,
+                    ray.meta.p1.x,
+                    ray.meta.p2.y,
+                    ray.meta.p2.x
+                )
+            );
+
             // Update the vertexes and positions of the object
             let dist = INFINITY;
             let hitEntity = undefined;
@@ -81,7 +91,10 @@ export function applyRayTracing(
                 // Calculate the ray against each line segment that comprises this entity.
                 for (const line of objLines) {
                     const objLine = convertToInterceptFormula(line);
-                    const intercept = lineIntersection(ray, objLine);
+                    const intercept: Point | undefined =
+                        objLine.meta.type === 'normal'
+                            ? lineIntersection(ray, objLine)
+                            : lineIntersection(verticalRay, objLine);
 
                     if (
                         intercept &&
@@ -111,18 +124,25 @@ export function applyRayTracing(
 
             // If the target that was hit is reflective, duplciate the ray!
             if (hitEntity && finalIntercept && finalLine) {
+                const vert = finalLine.meta.type === 'vertical';
                 const mat = m3.combine([
                     m3.translate(ox, oy),
+                    m3.rotate(vert ? rads(180) : 0),
                     m3.translate(ox, oy),
                 ]);
 
                 const a = Math.max(ox, finalIntercept.x);
                 const b = Math.min(ox, finalIntercept.x);
+                const c = Math.max(oy, finalIntercept.y);
+                const d = Math.min(oy, finalIntercept.y);
 
-                targetX = finalIntercept.x + -Math.sign(ray.m) * (a - b) * 4;
+                const sign = vert ? -1 : 1;
+                targetX =
+                    finalIntercept.x - sign * Math.sign(ray.m) * (a - b) * 4;
+
+                targetY = finalIntercept.y + sign * (c - d) * 4;
                 ox = finalIntercept.x;
                 oy = finalIntercept.y;
-                targetY = mat[7];
 
                 rays.push(
                     convertToInterceptFormula(
