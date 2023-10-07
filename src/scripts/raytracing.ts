@@ -23,7 +23,7 @@ import {
 
 const RAY_ENTITIES: Record<number, Entity> = {};
 const RAY_THICKNESS = 2;
-const MAX_RAYS = 20;
+const MAX_RAYS = 10;
 
 // The responsibility of this script is to render one or more rays to the map based on
 // the angle which the player is aiming, and whether the raytracing button is actively
@@ -38,7 +38,13 @@ export function applyRayTracing(
     for (const obj of Object.values(RAY_ENTITIES)) {
         obj.visible = false;
     }
-    const DEBUG_INFO: Record<number, any> = {};
+
+    for (const obj of scene.objects) {
+        const entity = obj as Entity;
+        if (entity.beam) {
+            entity.beam.hit = false;
+        }
+    }
 
     const { gl } = engine;
     if (!gl) return;
@@ -129,11 +135,7 @@ export function applyRayTracing(
             // If the target that was hit is reflective, duplciate the ray!
             if (hitEntity && finalIntercept && finalLine) {
                 const vert = finalLine.meta.type === 'vertical';
-                const mat = m3.combine([
-                    m3.translate(ox, oy),
-                    m3.rotate(vert ? Math.sign(ray.m) * rads(180) : 0),
-                    m3.translate(ox, oy),
-                ]);
+                hitEntity.beam.hit = true;
 
                 const a = Math.max(ox, finalIntercept.x);
                 const b = Math.min(ox, finalIntercept.x);
@@ -141,16 +143,20 @@ export function applyRayTracing(
                 const d = Math.min(oy, finalIntercept.y);
 
                 const sign = vert ? -1 : 1;
-                targetX =
-                    finalIntercept.x - sign * Math.sign(ray.m) * (a - b) * 4;
 
-                targetY = finalIntercept.y + sign * (c - d) * 4;
+                if (targetY > oy) {
+                    targetX =
+                        finalIntercept.x +
+                        sign * Math.sign(ray.m) * (a - b) * 4;
+                    targetY = finalIntercept.y - sign * (c - d) * 4;
+                } else {
+                    targetX =
+                        finalIntercept.x -
+                        sign * Math.sign(ray.m) * (a - b) * 4;
+                    targetY = finalIntercept.y + sign * (c - d) * 4;
+                }
                 ox = finalIntercept.x;
                 oy = finalIntercept.y;
-
-                DEBUG_INFO[rayIndex] = {
-                    ray,
-                };
 
                 rays.push(
                     convertToInterceptFormula(
@@ -163,8 +169,6 @@ export function applyRayTracing(
             rayIndex += 1;
         }
     }
-
-    console.log(DEBUG_INFO);
 }
 
 function createLine(index: number): Entity {

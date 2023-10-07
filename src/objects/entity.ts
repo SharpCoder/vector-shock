@@ -22,6 +22,9 @@ export class Entity implements WorldDrawable {
         accelerationY: 1,
         movementDuration: 0,
     };
+    beam = {
+        hit: false,
+    };
 
     name: string;
     position: number[];

@@ -9,7 +9,7 @@ export function spawnPlatform(
     h: number
 ): Entity {
     const platform = new Entity({
-        name: `platform_${w}_${h}`,
+        name: `platform_${x}_${y}_${w}_${h}`,
         applyPhysics: false,
         collidable: true,
         vertexes: rect2D(w, h),
@@ -17,7 +17,15 @@ export function spawnPlatform(
         offsets: [-w / 2, -h / 2, 0],
         position: [x, y, 0],
         rotation: zeros(),
-        update: function (time, engine) {},
+        update: function (time, engine) {
+            if (this.beam.hit) {
+                this.colors = Flatten(Repeat([255, 0, 255], 6));
+            } else {
+                this.colors = Flatten(Repeat([204, 255, 0], 6));
+            }
+
+            engine.activeScene.updateObject(this);
+        },
     });
 
     return platform;
