@@ -1,8 +1,7 @@
-// @ts-nocheck
-
 import { m3, type ProgramTemplate } from 'webgl-engine';
 import { FPS, SCREEN_HEIGHT, SCREEN_WIDTH } from '../constants';
 import type { Entity } from '../objects/entity';
+import { createShader } from './base';
 
 const default2DVertexShader = `
     attribute vec2 a_position;
@@ -19,8 +18,7 @@ const default2DVertexShader = `
     void main() {
         if (u_isBeam) {
             gl_Position = vec4(vec3(u_proj * u_camera * u_mat * vec3(a_position, 1)).xy, 0, 1);
-            
-            vec2 xy = vec3( vec3(a_position, 1)).xy;
+            vec2 xy = vec3(vec3(a_position, 1)).xy;
             v_texcoord = vec2(xy.x, xy.y);
         } else {
             gl_Position = vec4(0,0,0,0);
@@ -55,19 +53,9 @@ const default2DFragmentShader = `
     }
 `;
 
-const gl = document
-    .createElement('canvas')
-    .getContext('webgl') as WebGLRenderingContext;
-
-export const BeamShader: ProgramTemplate = {
+export const BeamShader = createShader({
     name: 'beam',
     order: 1,
-    objectDrawArgs: {
-        components: 2,
-        depthFunc: gl?.LESS,
-        mode: gl?.TRIANGLES,
-        blend: true,
-    },
     beforeDraw(engine) {
         const { gl } = engine;
         gl.blendFuncSeparate(
@@ -79,39 +67,8 @@ export const BeamShader: ProgramTemplate = {
     },
     vertexShader: default2DVertexShader,
     fragmentShader: default2DFragmentShader,
-    attributes: {
-        a_position: {
-            components: 2,
-            type: gl?.FLOAT,
-            normalized: false,
-            generateData: (engine) => {
-                return new Float32Array(engine.activeScene.vertexes);
-            },
-        },
-    },
+    attributes: {},
     staticUniforms: {
-        u_proj: (engine, loc) => {
-            const { gl } = engine;
-            gl.uniformMatrix3fv(
-                loc,
-                false,
-                m3.projection(SCREEN_WIDTH, -SCREEN_HEIGHT)
-            );
-        },
-        u_camera: (engine, loc) => {
-            const { gl } = engine;
-            const { camera } = engine.activeScene;
-
-            gl.uniformMatrix3fv(
-                loc,
-                false,
-                m3.combine([
-                    m3.translate(camera.position[0], camera.position[1]),
-                    m3.rotate(camera.rotation[0]),
-                    m3.translate(camera.offset[0], camera.offset[1]),
-                ])
-            );
-        },
         u_time: (engine, loc) => {
             const { gl } = engine;
             const time = new Date().getTime();
@@ -127,20 +84,5 @@ export const BeamShader: ProgramTemplate = {
             const { gl } = engine;
             gl.uniform1i(loc, obj.name.startsWith('ray_') ? 1 : 0);
         },
-        u_mat: (engine, loc, obj) => {
-            const { gl } = engine;
-            const entity = obj as Entity;
-            if (entity.getMatrix) {
-                gl.uniformMatrix3fv(
-                    loc,
-                    false,
-                    m3.combine([entity.getMatrix()])
-                );
-            } else {
-                console.error(
-                    `Drawable ${obj.name} is not a proper entity type`
-                );
-            }
-        },
     },
-};
+});

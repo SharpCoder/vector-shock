@@ -45,6 +45,7 @@ export function applyRayCasting(
     }
 
     const { gl } = engine;
+    const { camera } = scene;
     if (!gl) return;
     if (engine.keymap['shift'] !== true) {
         return;
@@ -55,8 +56,8 @@ export function applyRayCasting(
     const bbox = player.getBbox();
     let ox = bbox.x + bbox.w / 2;
     let oy = bbox.y - bbox.h / 2;
-    let targetX = engine.mouseOffsetX * scaleX;
-    let targetY = engine.mouseOffsetY * scaleY;
+    let targetX = camera.position[0] + engine.mouseOffsetX * scaleX;
+    let targetY = camera.position[1] + engine.mouseOffsetY * scaleY;
 
     // Calculate the dist of the ray
     const rays: LineInterceptFormula[] = [];

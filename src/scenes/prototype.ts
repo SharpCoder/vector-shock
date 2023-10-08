@@ -7,6 +7,7 @@ import { DefaultShader } from '../shaders/default';
 import { applyRayCasting } from '../scripts/raycasting';
 import { BeamShader } from '../shaders/beam';
 import { spawnButton } from '../objects/button';
+import { applyCameraFollow } from '../scripts/cameraFollow';
 
 const player = spawnPlayer({});
 export const PrototypeScene = new Scene<unknown>({
@@ -16,6 +17,7 @@ export const PrototypeScene = new Scene<unknown>({
     update: function (time, engine) {
         applyPhysics(time, PrototypeScene, engine);
         applyRayCasting(player, PrototypeScene, engine);
+        applyCameraFollow(player, engine);
     },
     init: (engine) => {
         engine.settings.fogColor = FOG_COLOR;
@@ -33,10 +35,3 @@ PrototypeScene.addObject(spawnButton(200, 100));
 PrototypeScene.addObject(player);
 PrototypeScene.addObject(spawnPlatform(600, SCREEN_HEIGHT - 180, 200, 5));
 PrototypeScene.addObject(spawnPlatform(800, SCREEN_HEIGHT - 400, 200, 5));
-PrototypeScene.addObject(
-    spawnPlatform(20, SCREEN_HEIGHT / 2, 5, SCREEN_HEIGHT)
-);
-
-PrototypeScene.addObject(
-    spawnPlatform(SCREEN_WIDTH - 20, SCREEN_HEIGHT / 2, 5, SCREEN_HEIGHT)
-);

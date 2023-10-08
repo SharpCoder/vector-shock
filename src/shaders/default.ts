@@ -1,8 +1,7 @@
 // @ts-nocheck
 
-import { m3, type ProgramTemplate } from 'webgl-engine';
-import { SCREEN_HEIGHT, SCREEN_WIDTH } from '../constants';
-import type { Entity } from '../objects/entity';
+import { type ProgramTemplate } from 'webgl-engine';
+import { createShader } from './base';
 
 const default2DVertexShader = `
     attribute vec2 a_position;
@@ -48,118 +47,12 @@ const gl = document
     .createElement('canvas')
     .getContext('webgl') as WebGLRenderingContext;
 
-export const DefaultShader: ProgramTemplate = {
+export const DefaultShader = createShader({
     name: 'default',
     order: 0,
-    objectDrawArgs: {
-        components: 2,
-        depthFunc: gl?.LESS,
-        mode: gl?.TRIANGLES,
-    },
     vertexShader: default2DVertexShader,
     fragmentShader: default2DFragmentShader,
-    attributes: {
-        a_color: {
-            components: 3,
-            type: gl?.UNSIGNED_BYTE,
-            normalized: true,
-            generateData: (engine) => {
-                return new Uint8Array(engine.activeScene.colors);
-            },
-        },
-        a_position: {
-            components: 2,
-            type: gl?.FLOAT,
-            normalized: false,
-            generateData: (engine) => {
-                return new Float32Array(engine.activeScene.vertexes);
-            },
-        },
-        a_texcoord: {
-            components: 2,
-            type: gl?.FLOAT,
-            normalized: false,
-            generateData: (engine) => {
-                return new Float32Array(engine.activeScene.texcoords);
-            },
-        },
-    },
-    staticUniforms: {
-        u_proj: (engine, loc) => {
-            const { gl } = engine;
-            gl.uniformMatrix3fv(
-                loc,
-                false,
-                m3.projection(SCREEN_WIDTH, -SCREEN_HEIGHT)
-            );
-        },
-        u_camera: (engine, loc) => {
-            const { gl } = engine;
-            const { camera } = engine.activeScene;
-
-            gl.uniformMatrix3fv(
-                loc,
-                false,
-                m3.combine([
-                    m3.translate(camera.position[0], camera.position[1]),
-                    m3.rotate(camera.rotation[0]),
-                    m3.translate(camera.offset[0], camera.offset[1]),
-                ])
-            );
-        },
-    },
-    dynamicUniforms: {
-        u_showtex: (engine, loc, obj) => {
-            const { gl } = engine;
-            gl.uniform1i(
-                loc,
-                obj.texture && obj.texture.enabled !== false ? 1 : 0
-            );
-        },
-        u_visible: (engine, loc, obj) => {
-            const { gl } = engine;
-            gl.uniform1i(loc, obj.hidden !== true);
-        },
-        u_texture: (engine, loc, obj) => {
-            const { gl } = engine;
-            /// Apply the current texture if relevant
-            // Check if the current texture is loaded
-            if (obj && obj.texture && obj.texture.enabled !== false) {
-                const { webglTexture, square } = obj.texture._computed;
-                if (obj.texture._computed) {
-                    gl.texParameteri(
-                        gl.TEXTURE_2D,
-                        gl.TEXTURE_WRAP_S,
-                        gl.CLAMP_TO_EDGE
-                    );
-                    gl.texParameteri(
-                        gl.TEXTURE_2D,
-                        gl.TEXTURE_WRAP_T,
-                        gl.CLAMP_TO_EDGE
-                    );
-                }
-
-                // This ensures the image is loaded into
-                // u_texture properly.
-                gl.uniform1i(loc, 0);
-                gl.activeTexture(gl.TEXTURE0);
-                gl.bindTexture(gl.TEXTURE_2D, webglTexture);
-            }
-        },
-        u_mat: (engine, loc, obj) => {
-            const { gl } = engine;
-            const entity = obj as Entity;
-            if (entity.getMatrix) {
-                gl.uniformMatrix3fv(
-                    loc,
-                    false,
-                    m3.combine([entity.getMatrix()])
-                );
-            } else {
-                console.error(
-                    `Drawable ${obj.name} is not a proper entity type`
-                );
-            }
-        },
-    },
-};
+    attributes: {},
+    staticUniforms: {},
+    dynamicUniforms: {},
+});
