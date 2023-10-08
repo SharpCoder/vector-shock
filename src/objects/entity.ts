@@ -122,8 +122,12 @@ export class Entity implements WorldDrawable {
     getLines(): Line[] {
         const bbox = this.getBbox();
         return [
+            // Horizontal line in the center
             makeLine(bbox.x, bbox.y, bbox.x + bbox.w, bbox.y),
+            // Left line
             makeLine(bbox.x, bbox.y - bbox.h, bbox.x, bbox.y),
+            // Right line
+            makeLine(bbox.x + bbox.w, bbox.y - bbox.h, bbox.x + bbox.w, bbox.y),
         ];
     }
 
