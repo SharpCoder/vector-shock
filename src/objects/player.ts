@@ -9,6 +9,8 @@ export type SpawnPlayerProps = {
 export function spawnPlayer({ update }: SpawnPlayerProps): Entity {
     const w = 30;
     const h = 30;
+    const x = 350;
+    const y = 150;
 
     const player = new Entity({
         name: 'player',
@@ -17,7 +19,7 @@ export function spawnPlayer({ update }: SpawnPlayerProps): Entity {
         vertexes: rect2D(w, h),
         colors: Flatten([Repeat([255, 0, 255], 3), Repeat([0, 255, 255], 3)]),
         offsets: [-w / 2, -h / 2, 0],
-        position: [350, 150, 0],
+        position: [x, y, 0],
         rotation: zeros(),
         update: function (time, engine) {
             processJump(player, engine);

@@ -1,7 +1,7 @@
-import type { Engine, Scene, bbox } from 'webgl-engine';
+import { loadModel, type Engine, type Scene, type bbox } from 'webgl-engine';
 import type { Entity } from '../objects/entity';
 import { FPS, SCREEN_HEIGHT } from '../constants';
-import type { Rect } from '../algebra';
+import { point, pointInRect, type Rect } from '../algebra';
 
 export const MAX_VEL_Y = 50;
 export const MAX_VEL_X = 4;
@@ -10,12 +10,21 @@ const FRICTION = 0.35;
 const THRESHOLD = FRICTION;
 const DECAY = 0.25;
 
-function getRect(box: Rect) {
+function dist(a: Entity, b: Entity) {
+    return Math.hypot(
+        a.position[0] - b.position[0],
+        a.position[1] - b.position[1]
+    );
+}
+
+function getPoints(box: Rect, entity: Entity) {
+    const h = box.h - entity.physics.vy;
+
     return {
-        x0: box.x,
-        x1: box.x + box.w,
-        y0: box.y,
-        y1: box.y - box.h,
+        p1: point(box.x, box.y),
+        p2: point(box.x + box.w, box.y),
+        p3: point(box.x, box.y + h),
+        p4: point(box.x + box.w, box.y + h),
     };
 }
 
@@ -24,12 +33,27 @@ function colliding(a: Entity, b: Entity) {
     if (!b._bbox) return false;
     if (a === b) return false;
 
-    const ra = getRect(a.getBbox());
-    const rb = getRect(b.getBbox());
+    const aRect = a.getBbox();
+    const aPoints = getPoints(aRect, a);
+    const bRect = b.getBbox();
+    const bPoints = getPoints(bRect, b);
+
+    const horizontal =
+        aPoints.p1.x > bPoints.p1.x && aPoints.p1.x < bPoints.p2.x;
 
     return (
-        (ra.x1 > rb.x0 && ra.x0 < rb.x1 && ra.y0 < rb.y0 && ra.y0 > rb.y1) ||
-        (ra.x1 > rb.x0 && ra.x1 < rb.x1 && ra.y1 < rb.y0 && ra.y1 > rb.y1)
+        pointInRect(aPoints.p1, bRect) ||
+        pointInRect(aPoints.p2, bRect) ||
+        pointInRect(aPoints.p3, bRect) ||
+        pointInRect(aPoints.p4, bRect) ||
+        (bPoints.p1.x < aPoints.p1.x &&
+            bPoints.p1.y > aPoints.p1.y &&
+            bPoints.p2.x > aPoints.p2.x &&
+            bPoints.p2.y > aPoints.p2.y &&
+            bPoints.p3.x < aPoints.p3.x &&
+            bPoints.p3.y < aPoints.p3.y &&
+            bPoints.p4.x > aPoints.p4.x &&
+            bPoints.p4.y < aPoints.p4.y)
     );
 }
 
@@ -105,19 +129,21 @@ export function applyPhysics(
                 MAX_VEL_X
             );
 
-            // Do the physics
-            entity.position[0] += entity.physics.vx * 2.25;
-            entity.position[1] -= entity.physics.vy;
-
             // Do collision
             // TODO: This is not going to work for walls
-            const collidedWith = collidables
-                .filter((x) => x != obj)
+            const activeCollisions = collidables
+                .filter((x) => x != entity)
                 .filter(
                     (x) =>
                         entity.physics.vy < 0 && colliding(entity, x as Entity)
-                )
-                .at(0);
+                );
+
+            activeCollisions.sort((a, b) => dist(b as Entity, a as Entity));
+
+            // console.log(activeCollisions);
+            const collidedWith = activeCollisions[0];
+
+            const h = Math.abs(entity.getBbox().h ?? 0);
 
             if (collidedWith && entity._bbox && collidedWith._bbox) {
                 entity.physics.vy = 0;
@@ -126,15 +152,20 @@ export function applyPhysics(
                     collidedWith.position[1] -
                     collidedWith._bbox?.w / 2 -
                     entity._bbox?.w / 2;
-            }
-
-            // Collision with the floor
-            const h = Math.abs(entity.getBbox().h ?? 0);
-            if (entity.position[1] > screenHeight - h / 2) {
+            } else if (entity.position[1] > screenHeight - h / 2) {
                 entity.position[1] = screenHeight - h / 2;
                 entity.physics.vy = 0;
                 entity.physics.accelerationY = 1;
+            } else {
+                // Do the physics
+                entity.position[1] -= entity.physics.vy;
             }
+
+            entity.position[0] += entity.physics.vx * 2.25;
         }
     }
 }
+
+loadModel('./assets/plane.obj', 'obj', true).then((model) => {
+    console.log(model);
+});

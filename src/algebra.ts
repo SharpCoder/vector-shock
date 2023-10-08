@@ -29,6 +29,10 @@ function round(v: number) {
     return Math.round(v * 1000) / 1000;
 }
 
+export function point(x: number, y: number) {
+    return { x, y };
+}
+
 export function fixRect(rect: Rect) {
     const x1 = Math.min(rect.x, rect.x + rect.w);
     const x2 = Math.max(rect.x, rect.x + rect.w);

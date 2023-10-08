@@ -1,6 +1,14 @@
-import { m3, type ProgramTemplate } from 'webgl-engine';
+import { m3, type ProgramTemplate, type repeat_mode } from 'webgl-engine';
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from '../constants';
 import type { Entity } from '../objects/entity';
+
+const gl = document.createElement('canvas').getContext('webgl');
+
+const repeatMap: Record<repeat_mode, number | undefined> = {
+    clamp_to_edge: gl?.CLAMP_TO_EDGE,
+    mirrored_repeat: gl?.MIRRORED_REPEAT,
+    repeat: gl?.REPEAT,
+};
 
 export function createShader(template: ProgramTemplate): ProgramTemplate {
     const gl = document
@@ -23,7 +31,7 @@ export function createShader(template: ProgramTemplate): ProgramTemplate {
             a_color: {
                 components: 3,
                 type: gl?.UNSIGNED_BYTE,
-                normalized: true,
+                normalized: false,
                 generateData: (engine) => {
                     return new Uint8Array(engine.activeScene.colors);
                 },
@@ -93,8 +101,27 @@ export function createShader(template: ProgramTemplate): ProgramTemplate {
                     obj.texture._computed &&
                     obj.texture.enabled !== false
                 ) {
-                    const { webglTexture } = obj.texture._computed;
-                    if (obj.texture._computed) {
+                    const { webglTexture, square } = obj.texture._computed;
+                    if (square) {
+                        gl.texParameteri(
+                            gl.TEXTURE_2D,
+                            gl.TEXTURE_WRAP_S,
+                            repeatMap[obj.texture.repeat_horizontal] ??
+                                gl.CLAMP_TO_EDGE
+                        );
+                        gl.texParameteri(
+                            gl.TEXTURE_2D,
+                            gl.TEXTURE_WRAP_T,
+                            repeatMap[obj.texture.repeat_vertical] ??
+                                gl.CLAMP_TO_EDGE
+                        );
+                        gl.uniform1i(loc, 0);
+                        gl.activeTexture(gl.TEXTURE0);
+                        gl.bindTexture(gl.TEXTURE_2D, webglTexture);
+                    } else {
+                        gl.uniform1i(loc, 1);
+                        gl.activeTexture(gl.TEXTURE1);
+                        gl.bindTexture(gl.TEXTURE_2D, webglTexture);
                         gl.texParameteri(
                             gl.TEXTURE_2D,
                             gl.TEXTURE_WRAP_S,
