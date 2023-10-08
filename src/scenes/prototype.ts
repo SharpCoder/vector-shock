@@ -8,6 +8,7 @@ import { applyRayCasting } from '../scripts/raycasting';
 import { BeamShader } from '../shaders/beam';
 import { spawnButton } from '../objects/button';
 import { applyCameraFollow } from '../scripts/cameraFollow';
+import { loadMap } from '../map';
 
 const player = spawnPlayer({});
 export const PrototypeScene = new Scene<unknown>({
@@ -35,3 +36,11 @@ PrototypeScene.addObject(spawnButton(200, 100));
 PrototypeScene.addObject(player);
 PrototypeScene.addObject(spawnPlatform(600, SCREEN_HEIGHT - 180, 200, 5));
 PrototypeScene.addObject(spawnPlatform(800, SCREEN_HEIGHT - 400, 200, 5));
+
+const map = loadMap({
+    width: SCREEN_WIDTH * 4,
+});
+
+for (const segment of map) {
+    PrototypeScene.addObject(segment);
+}

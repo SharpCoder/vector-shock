@@ -1,6 +1,4 @@
-import { m3, type ProgramTemplate } from 'webgl-engine';
-import { FPS, SCREEN_HEIGHT, SCREEN_WIDTH } from '../constants';
-import type { Entity } from '../objects/entity';
+// @ts-nocheck
 import { createShader } from './base';
 
 const default2DVertexShader = `
@@ -53,9 +51,16 @@ const default2DFragmentShader = `
     }
 `;
 
+const gl = document.createElement('canvas').getContext('webgl');
 export const BeamShader = createShader({
     name: 'beam',
     order: 1,
+    objectDrawArgs: {
+        components: 2,
+        depthFunc: gl?.ALWAYS,
+        mode: gl?.TRIANGLES,
+        blend: false,
+    },
     beforeDraw(engine) {
         const { gl } = engine;
         gl.blendFuncSeparate(
