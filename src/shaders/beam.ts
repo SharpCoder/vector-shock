@@ -36,30 +36,22 @@ const default2DFragmentShader = `
     varying vec4 v_color;
     varying vec2 v_texcoord;
     uniform float u_time;
-    vec3 colorA = vec3(1.,0.4,0.0);
-    vec3 colorB = vec3(0.0,0.0,0.8);
+    vec3 colorA = vec3(0,.4,.8);
+    vec3 colorB = vec3(.2,.8,1);
 
-    float adjust (float v) {
-        return v * 1.;
+    float random (in vec2 _st) {
+        return fract(sin(dot(_st.xy,
+                             vec2(12.9898,78.233)))*
+            43758.5453123);
     }
 
     void main() {
-        float time = abs(sin(u_time));
-        
 
-        float pct = 
-            sqrt(
-                pow(
-                    v_texcoord.x,
-                    2.0
-                )+
-                pow(
-                    v_texcoord.y,
-                    2.0
-                )
-            )/1200.0;
+        vec2 st = v_texcoord / 10.;
+        vec2 ipos = floor(st);
+        float pct = random(ipos*u_time);
 
-        gl_FragColor = vec4(mix(colorA, colorB, 0.), 1.);
+        gl_FragColor = vec4(mix(colorA, colorB, pct), 1.);
     }
 `;
 
@@ -72,7 +64,7 @@ export const BeamShader: ProgramTemplate = {
     order: 1,
     objectDrawArgs: {
         components: 2,
-        depthFunc: gl?.LEQUAL,
+        depthFunc: gl?.LESS,
         mode: gl?.TRIANGLES,
         blend: true,
     },
@@ -124,7 +116,10 @@ export const BeamShader: ProgramTemplate = {
             const { gl } = engine;
             const time = new Date().getTime();
 
-            gl.uniform1f(loc, (time / 300) % (Math.PI * 2));
+            gl.uniform1f(
+                loc,
+                Math.round(((time / 300) % (Math.PI * 2)) * 7.0) / 7.0
+            );
         },
     },
     dynamicUniforms: {

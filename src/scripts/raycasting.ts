@@ -21,7 +21,7 @@ import {
 
 const RAY_ENTITIES: Record<number, Entity> = {};
 const RAY_THICKNESS = 4;
-const MAX_RAYS = 10;
+const MAX_RAYS = 20;
 
 // The responsibility of this script is to render one or more rays to the map based on
 // the angle which the player is aiming, and whether the raytracing button is actively
@@ -34,7 +34,6 @@ export function applyRayCasting(
 ) {
     // Reset all the rays
     for (const obj of Object.values(RAY_ENTITIES)) {
-        obj.hidden = true;
         obj.visible = false;
     }
 
