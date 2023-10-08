@@ -6,5 +6,5 @@ export function shiftVisible(
     time: number,
     engine: Engine<unknown>
 ) {
-    this.visible = engine.keymap?.['shift'] === true;
+    this.hidden = engine.keymap?.['shift'] === true;
 }

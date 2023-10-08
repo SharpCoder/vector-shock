@@ -1,46 +1,65 @@
 // @ts-nocheck
 
 import { m3, type ProgramTemplate } from 'webgl-engine';
-import { SCREEN_HEIGHT, SCREEN_WIDTH } from '../constants';
+import { FPS, SCREEN_HEIGHT, SCREEN_WIDTH } from '../constants';
 import type { Entity } from '../objects/entity';
 
 const default2DVertexShader = `
     attribute vec2 a_position;
-    attribute vec4 a_color;
-    attribute vec2 a_texcoord;
 
     uniform mat3 u_proj;
     uniform mat3 u_camera;
     uniform mat3 u_mat;
-    uniform bool u_visible;
+    uniform bool u_isBeam;
 
     varying vec4 v_color;
     varying vec2 v_texcoord;
+    
 
     void main() {
-        if (u_visible) {
+        if (u_isBeam) {
             gl_Position = vec4(vec3(u_proj * u_camera * u_mat * vec3(a_position, 1)).xy, 0, 1);
-            v_color = a_color;
-            v_texcoord = vec2(a_texcoord.x, 1.0 - a_texcoord.y);
+            
+            vec2 xy = vec3( vec3(a_position, 1)).xy;
+            v_texcoord = vec2(xy.x, xy.y);
+        } else {
+            gl_Position = vec4(0,0,0,0);
         }
     }
 `;
 
 const default2DFragmentShader = `
     precision mediump float;
+    
+    #define PI 3.1415926538
+
     varying vec4 v_color;
     varying vec2 v_texcoord;
-    
-    // The texture
-    uniform sampler2D u_texture;
-    uniform bool u_showtex;
+    uniform float u_time;
+    vec3 colorA = vec3(1.,0.4,0.0);
+    vec3 colorB = vec3(0.0,0.0,0.8);
+
+    float adjust (float v) {
+        return v * 1.;
+    }
 
     void main() {
-        if (u_showtex) {
-            gl_FragColor = texture2D(u_texture, v_texcoord);
-        } else {
-            gl_FragColor = v_color;
-        }
+        float time = abs(sin(u_time));
+        
+
+        float pct = 
+            sqrt(
+                pow(
+                    v_texcoord.x,
+                    2.0
+                )+
+                pow(
+                    v_texcoord.y,
+                    2.0
+                )
+            )/1200.0;
+
+        gl_FragColor = vec4(mix(colorA, colorB, 0.), 1.);
     }
 `;
 
@@ -48,39 +67,33 @@ const gl = document
     .createElement('canvas')
     .getContext('webgl') as WebGLRenderingContext;
 
-export const DefaultShader: ProgramTemplate = {
-    name: 'default',
-    order: 0,
+export const BeamShader: ProgramTemplate = {
+    name: 'beam',
+    order: 1,
     objectDrawArgs: {
         components: 2,
-        depthFunc: gl?.LESS,
+        depthFunc: gl?.LEQUAL,
         mode: gl?.TRIANGLES,
+        blend: true,
+    },
+    beforeDraw(engine) {
+        const { gl } = engine;
+        gl.blendFuncSeparate(
+            gl.SRC_ALPHA,
+            gl.ONE_MINUS_SRC_ALPHA,
+            gl.ZERO,
+            gl.ONE
+        );
     },
     vertexShader: default2DVertexShader,
     fragmentShader: default2DFragmentShader,
     attributes: {
-        a_color: {
-            components: 3,
-            type: gl?.UNSIGNED_BYTE,
-            normalized: true,
-            generateData: (engine) => {
-                return new Uint8Array(engine.activeScene.colors);
-            },
-        },
         a_position: {
             components: 2,
             type: gl?.FLOAT,
             normalized: false,
             generateData: (engine) => {
                 return new Float32Array(engine.activeScene.vertexes);
-            },
-        },
-        a_texcoord: {
-            components: 2,
-            type: gl?.FLOAT,
-            normalized: false,
-            generateData: (engine) => {
-                return new Float32Array(engine.activeScene.texcoords);
             },
         },
     },
@@ -107,44 +120,17 @@ export const DefaultShader: ProgramTemplate = {
                 ])
             );
         },
+        u_time: (engine, loc) => {
+            const { gl } = engine;
+            const time = new Date().getTime();
+
+            gl.uniform1f(loc, (time / 300) % (Math.PI * 2));
+        },
     },
     dynamicUniforms: {
-        u_showtex: (engine, loc, obj) => {
+        u_isBeam: (engine, loc, obj) => {
             const { gl } = engine;
-            gl.uniform1i(
-                loc,
-                obj.texture && obj.texture.enabled !== false ? 1 : 0
-            );
-        },
-        u_visible: (engine, loc, obj) => {
-            const { gl } = engine;
-            gl.uniform1i(loc, obj.hidden !== true);
-        },
-        u_texture: (engine, loc, obj) => {
-            const { gl } = engine;
-            /// Apply the current texture if relevant
-            // Check if the current texture is loaded
-            if (obj && obj.texture && obj.texture.enabled !== false) {
-                const { webglTexture, square } = obj.texture._computed;
-                if (obj.texture._computed) {
-                    gl.texParameteri(
-                        gl.TEXTURE_2D,
-                        gl.TEXTURE_WRAP_S,
-                        gl.CLAMP_TO_EDGE
-                    );
-                    gl.texParameteri(
-                        gl.TEXTURE_2D,
-                        gl.TEXTURE_WRAP_T,
-                        gl.CLAMP_TO_EDGE
-                    );
-                }
-
-                // This ensures the image is loaded into
-                // u_texture properly.
-                gl.uniform1i(loc, 0);
-                gl.activeTexture(gl.TEXTURE0);
-                gl.bindTexture(gl.TEXTURE_2D, webglTexture);
-            }
+            gl.uniform1i(loc, obj.name.startsWith('ray_') ? 1 : 0);
         },
         u_mat: (engine, loc, obj) => {
             const { gl } = engine;

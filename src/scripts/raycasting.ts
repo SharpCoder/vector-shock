@@ -7,11 +7,9 @@ import {
     Repeat,
     zeros,
     rect2D,
-    m3,
-    rads,
 } from 'webgl-engine';
 import { Entity } from '../objects/entity';
-import { INFINITY, SCREEN_HEIGHT, getScreenScale } from '../constants';
+import { INFINITY, getScreenScale } from '../constants';
 import {
     convertToInterceptFormula,
     lineIntersection,
@@ -22,20 +20,21 @@ import {
 } from '../algebra';
 
 const RAY_ENTITIES: Record<number, Entity> = {};
-const RAY_THICKNESS = 2;
+const RAY_THICKNESS = 4;
 const MAX_RAYS = 10;
 
 // The responsibility of this script is to render one or more rays to the map based on
 // the angle which the player is aiming, and whether the raytracing button is actively
 // engaged. This method will establish a ray and then reflect it based on reflective
 // surfaces that are encountered along the way.
-export function applyRayTracing(
+export function applyRayCasting(
     player: Entity,
     scene: Scene<unknown>,
     engine: Engine<unknown>
 ) {
     // Reset all the rays
     for (const obj of Object.values(RAY_ENTITIES)) {
+        obj.hidden = true;
         obj.visible = false;
     }
 
@@ -177,6 +176,7 @@ function createLine(index: number): Entity {
         applyPhysics: false,
         collidable: false,
         computeBbox: false,
+        hidden: true,
         vertexes: rect2D(1, 1),
         colors: Flatten(Repeat([255, 0, 255], 6)),
         offsets: [0, -RAY_THICKNESS / 2, 0],

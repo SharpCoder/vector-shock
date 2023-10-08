@@ -36,6 +36,7 @@ export class Entity implements WorldDrawable {
     texcoords?: number[];
     texture?: texture;
     colors?: number[];
+    hidden?: boolean;
     visible?: boolean;
     scale?: [number, number, number];
     additionalMatrix?: number[];
@@ -53,6 +54,8 @@ export class Entity implements WorldDrawable {
         collidable,
         computeBbox,
         name,
+        visible,
+        hidden,
         position,
         rotation,
         offsets,
@@ -61,7 +64,6 @@ export class Entity implements WorldDrawable {
         texcoords,
         texture,
         colors,
-        visible,
         scale,
         additionalMatrix,
         zIndex,
@@ -81,6 +83,7 @@ export class Entity implements WorldDrawable {
         this.texture = texture;
         this.colors = colors;
         this.visible = visible;
+        this.hidden = hidden ?? false;
         this.scale = scale;
         this.additionalMatrix = additionalMatrix;
         this.zIndex = zIndex ?? 0;

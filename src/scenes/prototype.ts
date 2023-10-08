@@ -4,16 +4,17 @@ import { spawnPlayer } from '../objects/player';
 import { applyPhysics } from '../scripts/physics';
 import { spawnPlatform } from '../objects/platform';
 import { DefaultShader } from '../shaders/default';
-import { applyRayTracing } from '../scripts/raytracing';
+import { applyRayCasting } from '../scripts/raycasting';
+import { BeamShader } from '../shaders/beam';
 
 const player = spawnPlayer({});
 export const PrototypeScene = new Scene<unknown>({
     title: 'Prototype Scene',
-    shaders: [DefaultShader],
+    shaders: [DefaultShader, BeamShader],
     once: (engine) => {},
     update: function (time, engine) {
         applyPhysics(time, PrototypeScene, engine);
-        applyRayTracing(player, PrototypeScene, engine);
+        applyRayCasting(player, PrototypeScene, engine);
     },
     init: (engine) => {
         engine.settings.fogColor = FOG_COLOR;
