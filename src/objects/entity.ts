@@ -31,6 +31,7 @@ export class Entity implements WorldDrawable {
     rotation: number[];
     offsets: number[];
     vertexes: number[];
+    reflective?: boolean;
     computeBbox?: boolean;
     children: Drawable[];
     texcoords?: number[];
@@ -67,6 +68,7 @@ export class Entity implements WorldDrawable {
         scale,
         additionalMatrix,
         zIndex,
+        reflective,
         update,
         beforeDraw,
     }: WorldDrawable) {
@@ -87,6 +89,7 @@ export class Entity implements WorldDrawable {
         this.scale = scale;
         this.additionalMatrix = additionalMatrix;
         this.zIndex = zIndex ?? 0;
+        this.reflective = reflective ?? false;
         this.update = update;
         this.beforeDraw = beforeDraw;
     }

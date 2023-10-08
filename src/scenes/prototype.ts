@@ -6,6 +6,7 @@ import { spawnPlatform } from '../objects/platform';
 import { DefaultShader } from '../shaders/default';
 import { applyRayCasting } from '../scripts/raycasting';
 import { BeamShader } from '../shaders/beam';
+import { spawnButton } from '../objects/button';
 
 const player = spawnPlayer({});
 export const PrototypeScene = new Scene<unknown>({
@@ -28,6 +29,7 @@ export const PrototypeScene = new Scene<unknown>({
     components: 2,
 });
 
+PrototypeScene.addObject(spawnButton(200, 100));
 PrototypeScene.addObject(player);
 PrototypeScene.addObject(spawnPlatform(600, SCREEN_HEIGHT - 180, 200, 5));
 PrototypeScene.addObject(spawnPlatform(800, SCREEN_HEIGHT - 400, 200, 5));

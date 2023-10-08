@@ -12,6 +12,7 @@ export function spawnPlatform(
         name: `platform_${x}_${y}_${w}_${h}`,
         applyPhysics: false,
         collidable: true,
+        reflective: true,
         vertexes: rect2D(w, h),
         colors: Flatten([Repeat([204, 255, 0], 6)]),
         offsets: [-w / 2, -h / 2, 0],

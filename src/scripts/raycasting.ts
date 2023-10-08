@@ -130,11 +130,18 @@ export function applyRayCasting(
             rayEntity.rotation[0] = Math.atan2(targetY - oy, targetX - ox);
             rayEntity.visible = true;
 
-            // If the target that was hit is reflective, duplciate the ray!
-            if (hitEntity && finalIntercept && finalLine) {
-                const vert = finalLine.meta.type === 'vertical';
+            if (hitEntity) {
                 hitEntity.beam.hit = true;
+            }
 
+            // If the target that was hit is reflective, duplciate the ray!
+            if (
+                hitEntity &&
+                finalIntercept &&
+                finalLine &&
+                hitEntity.reflective
+            ) {
+                const vert = finalLine.meta.type === 'vertical';
                 const a = Math.max(ox, finalIntercept.x);
                 const b = Math.min(ox, finalIntercept.x);
                 const c = Math.max(oy, finalIntercept.y);
