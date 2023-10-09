@@ -47,9 +47,10 @@ export function applyRayCasting(
     const { gl } = engine;
     const { camera } = scene;
     if (!gl) return;
-    if (engine.keymap['shift'] !== true) {
-        return;
-    }
+    if (engine.mousebutton != 1) return;
+    // if (engine.keymap['shift'] !== true) {
+    //     return;
+    // }
 
     // Bunch o constants
     const [scaleX, scaleY] = getScreenScale(gl);

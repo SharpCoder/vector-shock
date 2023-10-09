@@ -8,7 +8,6 @@ export function spawnTile(
     h: number,
     size: number
 ): Entity {
-    console.log(w / size);
     const tile = new Entity({
         name: `tile_${size}`,
         applyPhysics: false,
@@ -26,7 +25,7 @@ export function spawnTile(
             uri: './assets/tile.png',
             enabled: true,
         },
-        texcoords: tex2D(w / size, h / size),
+        texcoords: tex2D(w / size, 1),
         update: function (time, engine) {},
     });
 

@@ -1,6 +1,7 @@
 import { rect2D, Flatten, Repeat, zeros, rads, Engine } from 'webgl-engine';
 import { Entity } from './entity';
 import { processJump } from '../scripts/keyboard';
+import { SCREEN_HEIGHT } from '../constants';
 
 export type SpawnPlayerProps = {
     update?: (time: number, engine: Engine<unknown>) => void;
@@ -10,7 +11,7 @@ export function spawnPlayer({ update }: SpawnPlayerProps): Entity {
     const w = 30;
     const h = 30;
     const x = 350;
-    const y = 150;
+    const y = SCREEN_HEIGHT - 100;
 
     const player = new Entity({
         name: 'player',

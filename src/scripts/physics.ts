@@ -140,9 +140,7 @@ export function applyPhysics(
 
             activeCollisions.sort((a, b) => dist(b as Entity, a as Entity));
 
-            // console.log(activeCollisions);
             const collidedWith = activeCollisions[0];
-
             const h = Math.abs(entity.getBbox().h ?? 0);
 
             if (collidedWith && entity._bbox && collidedWith._bbox) {
@@ -165,7 +163,3 @@ export function applyPhysics(
         }
     }
 }
-
-loadModel('./assets/plane.obj', 'obj', true).then((model) => {
-    console.log(model);
-});

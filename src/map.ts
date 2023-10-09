@@ -12,12 +12,12 @@ export function loadMap(def: MapDefinition): Entity[] {
     objects.push(spawnWallpaper());
 
     // Build the floor
-    const tileSize = 100;
+    const tileSize = 64;
     objects.push(
         spawnTile(
             0,
             SCREEN_HEIGHT - tileSize / 2,
-            tileSize * 200,
+            tileSize * 100,
             tileSize,
             tileSize
         )
