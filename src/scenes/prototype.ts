@@ -25,17 +25,23 @@ export const PrototypeScene = new Scene<unknown>({
 
         // Match the page with the fog color.
         document.body.style.backgroundColor = `rgba(${engine.settings.fogColor.map(
-            (x) => x * 220
+            (x) => x * 150
         )})`;
     },
     status: 'initializing',
     components: 2,
 });
 
-PrototypeScene.addObject(spawnButton(200, 100));
+const topPlatform = spawnPlatform(800, SCREEN_HEIGHT - 500, 200, 5);
+
+PrototypeScene.addObject(
+    spawnButton(200, 100, () => {
+        topPlatform.properties.activated = new Date().getTime();
+    })
+);
 PrototypeScene.addObject(player);
 PrototypeScene.addObject(spawnPlatform(600, SCREEN_HEIGHT - 180, 200, 5));
-PrototypeScene.addObject(spawnPlatform(800, SCREEN_HEIGHT - 400, 200, 5));
+PrototypeScene.addObject(topPlatform);
 
 const map = loadMap({
     width: SCREEN_WIDTH * 4,

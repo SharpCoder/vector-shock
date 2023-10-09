@@ -42,6 +42,7 @@ export class Entity implements WorldDrawable {
     scale?: [number, number, number];
     additionalMatrix?: number[];
     zIndex?: number;
+    properties: Record<any, any>;
     _parent?: Entity;
     _bbox?: bbox;
     _computed?: {
@@ -68,6 +69,7 @@ export class Entity implements WorldDrawable {
         scale,
         additionalMatrix,
         zIndex,
+        properties,
         reflective,
         update,
         beforeDraw,
@@ -90,6 +92,7 @@ export class Entity implements WorldDrawable {
         this.additionalMatrix = additionalMatrix;
         this.zIndex = zIndex ?? 0;
         this.reflective = reflective ?? false;
+        this.properties = properties ?? {};
         this.update = update;
         this.beforeDraw = beforeDraw;
     }

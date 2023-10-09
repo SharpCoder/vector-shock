@@ -4,8 +4,8 @@ import { type ProgramTemplate } from 'webgl-engine';
 import { createShader } from './base';
 
 const default2DVertexShader = `
+    attribute vec3 a_color;
     attribute vec2 a_position;
-    attribute vec4 a_color;
     attribute vec2 a_texcoord;
 
     uniform mat3 u_proj;
@@ -19,8 +19,8 @@ const default2DVertexShader = `
     void main() {
         if (u_visible) {
             gl_Position = vec4(vec3(u_proj * u_camera * u_mat * vec3(a_position, 1)).xy, 0, 1);
-            v_color = a_color;
-            v_texcoord = vec2(a_texcoord.x, 1.0 - a_texcoord.y);
+            v_color = vec4(a_color, 1);
+            v_texcoord = vec2(a_texcoord.x, 1. - a_texcoord.y);
         }
     }
 `;

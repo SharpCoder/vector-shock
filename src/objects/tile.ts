@@ -15,10 +15,11 @@ export function spawnTile(
         collidable: true,
         reflective: false,
         vertexes: rect2D(w, h),
-        colors: Flatten([Repeat([204, 255, 0], 6)]),
+        colors: Flatten([Repeat([255, 0, 0], 6)]),
         offsets: [-w / 2, -h / 2, 0],
         position: [x, y, 0],
         rotation: zeros(),
+        zIndex: 0,
         texture: {
             repeat_horizontal: 'repeat',
             repeat_vertical: 'clamp_to_edge',

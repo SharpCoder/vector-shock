@@ -15,18 +15,32 @@ export function spawnPlatform(
         reflective: true,
         computeBbox: true,
         vertexes: rect2D(w, h),
-        colors: Flatten([Repeat([204, 255, 0], 6)]),
+        colors: Flatten(Repeat([0, 0, 0], 6)),
         offsets: [-w / 2, -h / 2, 0],
         position: [x, y, 0],
         rotation: zeros(),
+        properties: {
+            activated: undefined,
+        },
         update: function (time, engine) {
             if (this.beam.hit) {
                 this.colors = Flatten(Repeat([255, 0, 255], 6));
             } else {
-                this.colors = Flatten(Repeat([204, 255, 0], 6));
+                this.colors = Flatten(Repeat([242, 150, 1], 6));
             }
 
             engine.activeScene.updateObject(this);
+
+            if (this.properties?.activated)
+                this.position[1] =
+                    y +
+                    150 *
+                        Math.sin(
+                            ((new Date().getTime() -
+                                this.properties.activated) /
+                                1000.0) %
+                                (2 * Math.PI)
+                        );
         },
     });
 

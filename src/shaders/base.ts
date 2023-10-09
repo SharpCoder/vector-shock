@@ -31,7 +31,7 @@ export function createShader(template: ProgramTemplate): ProgramTemplate {
             a_color: {
                 components: 3,
                 type: gl?.UNSIGNED_BYTE,
-                normalized: false,
+                normalized: true,
                 generateData: (engine) => {
                     return new Uint8Array(engine.activeScene.colors);
                 },
@@ -102,7 +102,9 @@ export function createShader(template: ProgramTemplate): ProgramTemplate {
                     obj.texture.enabled !== false
                 ) {
                     const { webglTexture, square } = obj.texture._computed;
+
                     if (square) {
+                        gl.bindTexture(gl.TEXTURE_2D, webglTexture);
                         gl.texParameteri(
                             gl.TEXTURE_2D,
                             gl.TEXTURE_WRAP_S,
@@ -117,10 +119,7 @@ export function createShader(template: ProgramTemplate): ProgramTemplate {
                         );
                         gl.uniform1i(loc, 0);
                         gl.activeTexture(gl.TEXTURE0);
-                        gl.bindTexture(gl.TEXTURE_2D, webglTexture);
                     } else {
-                        gl.uniform1i(loc, 1);
-                        gl.activeTexture(gl.TEXTURE1);
                         gl.bindTexture(gl.TEXTURE_2D, webglTexture);
                         gl.texParameteri(
                             gl.TEXTURE_2D,
@@ -132,13 +131,11 @@ export function createShader(template: ProgramTemplate): ProgramTemplate {
                             gl.TEXTURE_WRAP_T,
                             gl.CLAMP_TO_EDGE
                         );
+                        // This ensures the image is loaded into
+                        // u_texture properly.
+                        gl.uniform1i(loc, 1);
+                        gl.activeTexture(gl.TEXTURE1);
                     }
-
-                    // This ensures the image is loaded into
-                    // u_texture properly.
-                    gl.uniform1i(loc, 0);
-                    gl.activeTexture(gl.TEXTURE0);
-                    gl.bindTexture(gl.TEXTURE_2D, webglTexture);
                 }
             },
             u_mat: (engine, loc, obj) => {
