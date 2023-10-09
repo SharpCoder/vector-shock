@@ -9,6 +9,7 @@ import { BeamShader } from '../shaders/beam';
 import { spawnButton } from '../objects/button';
 import { applyCameraFollow } from '../scripts/cameraFollow';
 import { loadMap } from '../map';
+import { spawnTile } from '../objects/tile';
 
 const player = spawnPlayer({});
 export const PrototypeScene = new Scene<unknown>({
@@ -32,7 +33,7 @@ export const PrototypeScene = new Scene<unknown>({
     components: 2,
 });
 
-const topPlatform = spawnPlatform(800, SCREEN_HEIGHT - 500, 200, 5);
+const topPlatform = spawnPlatform(800, SCREEN_HEIGHT - 500, 120, 5);
 
 PrototypeScene.addObject(
     spawnButton(200, 100, () => {
@@ -40,7 +41,7 @@ PrototypeScene.addObject(
     })
 );
 PrototypeScene.addObject(player);
-PrototypeScene.addObject(spawnPlatform(600, SCREEN_HEIGHT - 180, 200, 5));
+PrototypeScene.addObject(spawnPlatform(600, SCREEN_HEIGHT - 180, 120, 5));
 PrototypeScene.addObject(topPlatform);
 
 const map = loadMap({

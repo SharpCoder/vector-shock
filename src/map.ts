@@ -1,3 +1,4 @@
+import { rads } from 'webgl-engine';
 import { SCREEN_HEIGHT, SCREEN_WIDTH } from './constants';
 import type { Entity } from './objects/entity';
 import { spawnTile } from './objects/tile';
@@ -9,7 +10,7 @@ export type MapDefinition = {
 
 export function loadMap(def: MapDefinition): Entity[] {
     const objects: Entity[] = [];
-    objects.push(spawnWallpaper());
+    // objects.push(spawnWallpaper());
 
     // Build the floor
     const tileSize = 64;
@@ -20,6 +21,16 @@ export function loadMap(def: MapDefinition): Entity[] {
             tileSize * 100,
             tileSize,
             tileSize
+        )
+    );
+    objects.push(
+        spawnTile(
+            SCREEN_WIDTH,
+            SCREEN_HEIGHT - tileSize * 10,
+            tileSize,
+            tileSize * 20,
+            tileSize,
+            rads(90)
         )
     );
 

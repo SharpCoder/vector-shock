@@ -40,6 +40,7 @@ export class Entity implements WorldDrawable {
     hidden?: boolean;
     visible?: boolean;
     scale?: [number, number, number];
+    preMatrix?: number[];
     additionalMatrix?: number[];
     zIndex?: number;
     properties: Record<any, any>;
@@ -67,6 +68,7 @@ export class Entity implements WorldDrawable {
         texture,
         colors,
         scale,
+        preMatrix,
         additionalMatrix,
         zIndex,
         properties,
@@ -89,6 +91,7 @@ export class Entity implements WorldDrawable {
         this.visible = visible;
         this.hidden = hidden ?? false;
         this.scale = scale;
+        this.preMatrix = preMatrix;
         this.additionalMatrix = additionalMatrix;
         this.zIndex = zIndex ?? 0;
         this.reflective = reflective ?? false;
@@ -147,6 +150,7 @@ export class Entity implements WorldDrawable {
             m3.rotate(this.rotation[0]),
             m3.scale(this.scale?.[0] ?? 1, this.scale?.[1] ?? 1),
             m3.translate(this.offsets[0], this.offsets[1]),
+            this.additionalMatrix ?? m3.identity(),
         ]);
     }
 }

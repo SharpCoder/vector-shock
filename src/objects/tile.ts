@@ -1,4 +1,13 @@
-import { rect2D, Flatten, Repeat, zeros, tex2D } from 'webgl-engine';
+import {
+    rect2D,
+    Flatten,
+    Repeat,
+    zeros,
+    tex2D,
+    rads,
+    m4,
+    m3,
+} from 'webgl-engine';
 import { Entity } from './entity';
 
 export function spawnTile(
@@ -6,10 +15,25 @@ export function spawnTile(
     y: number,
     w: number,
     h: number,
-    size: number
+    size: number,
+    rotation?: number
 ): Entity {
+    const texcoordsBase = tex2D(w / size, h / size);
+    const texcoords = [];
+
+    // Rotate the texture
+    for (let i = 0; i < texcoordsBase.length; i += 2) {
+        const mat = m3.combine([
+            m3.rotate(rotation ?? 0),
+            m3.translate(texcoordsBase[i], texcoordsBase[i + 1]),
+        ]);
+
+        texcoords.push(mat[6]);
+        texcoords.push(mat[7]);
+    }
+
     const tile = new Entity({
-        name: `tile_${size}`,
+        name: `tile_${x}_${y}_${size}`,
         applyPhysics: false,
         collidable: true,
         reflective: false,
@@ -18,14 +42,15 @@ export function spawnTile(
         offsets: [-w / 2, -h / 2, 0],
         position: [x, y, 0],
         rotation: zeros(),
+        preMatrix: m3.rotate(rotation ?? 0),
         zIndex: 0,
         texture: {
             repeat_horizontal: 'repeat',
-            repeat_vertical: 'clamp_to_edge',
+            repeat_vertical: 'repeat',
             uri: './assets/tile.png',
             enabled: true,
         },
-        texcoords: tex2D(w / size, 1),
+        texcoords,
         update: function (time, engine) {},
     });
 
