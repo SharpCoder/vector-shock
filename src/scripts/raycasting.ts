@@ -56,7 +56,7 @@ export function applyRayCasting(
     const [scaleX, scaleY] = getScreenScale(gl);
     const bbox = player.getBbox();
     let ox = bbox.x + bbox.w / 2;
-    let oy = bbox.y - bbox.h / 2;
+    let oy = bbox.y + bbox.h / 2;
     let targetX = camera.position[0] + engine.mouseOffsetX * scaleX;
     let targetY = camera.position[1] + engine.mouseOffsetY * scaleY;
 

@@ -33,28 +33,12 @@ export function point(x: number, y: number) {
     return { x, y };
 }
 
-export function fixRect(rect: Rect) {
-    const x1 = Math.min(rect.x, rect.x + rect.w);
-    const x2 = Math.max(rect.x, rect.x + rect.w);
-    const y1 = Math.min(rect.y, rect.y + rect.h);
-    const y2 = Math.max(rect.y, rect.y + rect.h);
-
-    return {
-        x: round(x1),
-        y: round(y1),
-        w: round(x2 - x1),
-        h: round(y2 - y1),
-    };
-}
-
 export function pointInRect(p: Point, rect: Rect): boolean {
-    rect = fixRect(rect);
-
     return (
         p.x >= rect.x &&
         p.x <= rect.x + rect.w &&
-        p.y >= rect.y - rect.h &&
-        p.y <= rect.y
+        p.y >= rect.y &&
+        p.y <= rect.y + rect.h
     );
 }
 

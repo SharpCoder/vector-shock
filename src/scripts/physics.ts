@@ -38,9 +38,6 @@ function colliding(a: Entity, b: Entity) {
     const bRect = b.getBbox();
     const bPoints = getPoints(bRect, b);
 
-    const horizontal =
-        aPoints.p1.x > bPoints.p1.x && aPoints.p1.x < bPoints.p2.x;
-
     return (
         pointInRect(aPoints.p1, bRect) ||
         pointInRect(aPoints.p2, bRect) ||

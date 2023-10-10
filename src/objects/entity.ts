@@ -5,7 +5,7 @@ import {
     type bbox,
     type texture,
 } from 'webgl-engine';
-import { makeLine, type Line, fixRect, type Rect } from '../algebra';
+import { makeLine, type Line, type Rect } from '../algebra';
 
 interface WorldDrawable extends Drawable {
     applyPhysics: boolean;
@@ -111,12 +111,12 @@ export class Entity implements WorldDrawable {
         } else {
             const bbox = this._bbox;
             // The 3D coordinate plane has some attributes reversed.
-            return fixRect({
+            return {
                 x: bbox.x,
-                y: bbox.y,
+                y: bbox.y - bbox.w,
                 w: -bbox.h,
                 h: bbox.w,
-            });
+            };
         }
     }
 
@@ -129,13 +129,23 @@ export class Entity implements WorldDrawable {
         const bbox = this.getBbox();
         return [
             // Horizontal line in the center
-            makeLine(bbox.x, bbox.y, bbox.x + bbox.w, bbox.y),
-            // Horizontal line in the top
-            makeLine(bbox.x, bbox.y - bbox.h, bbox.x + bbox.w, bbox.y - bbox.h),
+            makeLine(bbox.x, bbox.y + 1, bbox.x + bbox.w, bbox.y + 1),
+            // Horizontal line in the bottom
+            makeLine(
+                bbox.x,
+                bbox.y + bbox.h - 1,
+                bbox.x + bbox.w,
+                bbox.y + bbox.h - 1
+            ),
             // Left line
-            makeLine(bbox.x, bbox.y - bbox.h, bbox.x, bbox.y),
+            makeLine(bbox.x, bbox.y, bbox.x, bbox.y + bbox.h - 1),
             // Right line
-            makeLine(bbox.x + bbox.w, bbox.y - bbox.h, bbox.x + bbox.w, bbox.y),
+            makeLine(
+                bbox.x + bbox.w,
+                bbox.y,
+                bbox.x + bbox.w,
+                bbox.y + bbox.h - 1
+            ),
         ];
     }
 
