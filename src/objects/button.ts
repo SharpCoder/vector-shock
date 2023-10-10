@@ -23,7 +23,7 @@ export function spawnButton(x: number, y: number, onHit?: () => void): Entity {
             if (hit) {
                 this.colors = Flatten(Repeat([255, 255, 255], 6));
             } else {
-                this.colors = Flatten(Repeat([255, 0, 0], 6));
+                this.colors = Flatten(Repeat([255, 0, 255], 6));
             }
 
             engine.activeScene.updateObject(this);

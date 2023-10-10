@@ -24,9 +24,9 @@ export function spawnPlatform(
         },
         update: function (time, engine) {
             if (this.beam.hit) {
-                this.colors = Flatten(Repeat([255, 0, 255], 6));
+                this.colors = Flatten(Repeat([255, 255, 255], 6));
             } else {
-                this.colors = Flatten(Repeat([242, 150, 1], 6));
+                this.colors = Flatten(Repeat([255, 0, 255], 6));
             }
 
             engine.activeScene.updateObject(this);
