@@ -10,7 +10,7 @@ export type MapDefinition = {
 
 export function loadMap(def: MapDefinition): Entity[] {
     const objects: Entity[] = [];
-    // objects.push(spawnWallpaper());
+    objects.push(spawnWallpaper());
 
     // Build the floor
     const tileSize = 64;
