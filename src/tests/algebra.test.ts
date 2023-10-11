@@ -124,3 +124,10 @@ test('Algebra - Vertical Intercept (2 lines) Not Intercepting', () => {
     expect(line1.meta.type).toBe('vertical');
     expect(line2.meta.type).toBe('vertical');
 });
+
+test('Algebra - Line with Zero Magnitude', () => {
+    const line1 = convertToInterceptFormula(makeLine(350, 10, 350, 10));
+    const line2 = convertToInterceptFormula(makeLine(100, 10, 100, 10));
+    const intercept = lineIntersection(line1, line2);
+    expect(intercept).toBeUndefined();
+});
