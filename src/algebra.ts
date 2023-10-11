@@ -11,6 +11,8 @@ export type Line = {
 export type LineInterceptFormula = {
     m: number;
     b: number;
+    vM: number;
+    vB: number;
     meta: {
         type: 'vertical' | 'normal';
         p1: Point;
@@ -57,51 +59,58 @@ export function makeLine(x1: number, y1: number, x2: number, y2: number): Line {
 
 export function convertToInterceptFormula(line: Line): LineInterceptFormula {
     const vertical = line.p2.x === line.p1.x;
-    if (vertical) {
-        const m = (line.p2.x - line.p1.x) / (line.p2.y - line.p1.y);
-        return {
-            m,
-            b: line.p1.x - m * line.p1.y,
-            meta: {
-                type: 'vertical',
-                p1: line.p1,
-                p2: line.p2,
-            },
-        };
-    } else {
-        const m = (line.p2.y - line.p1.y) / (line.p2.x - line.p1.x);
-        return {
-            m,
-            b: line.p1.y - m * line.p1.x,
-            meta: {
-                type: 'normal',
-                p1: line.p1,
-                p2: line.p2,
-            },
-        };
-    }
+
+    // Normal parameters
+    const m = (line.p2.y - line.p1.y) / (line.p2.x - line.p1.x);
+    const b = line.p1.y - m * line.p1.x;
+
+    // Vertical parameters
+    const vM = 0;
+    const vB = line.p1.x;
+
+    return {
+        m,
+        b,
+        vM,
+        vB,
+        meta: {
+            type: vertical ? 'vertical' : 'normal',
+            p1: line.p1,
+            p2: line.p2,
+        },
+    };
 }
 
 export function lineIntersection(
     line1: LineInterceptFormula,
     line2: LineInterceptFormula
 ): Point | undefined {
-    const xIntercept = (line2.b - line1.b) / (line1.m - line2.m);
-    const yIntercept = line1.m * xIntercept + line1.b;
+    let xIntercept = NaN;
+    let yIntercept = NaN;
+
+    if (line1.meta.type === 'vertical' && line2.meta.type === 'normal') {
+        xIntercept = line1.vB;
+        yIntercept = line2.m * xIntercept + line2.b;
+    } else if (line1.meta.type === 'normal' && line2.meta.type === 'vertical') {
+        xIntercept = line2.vB;
+        yIntercept = line1.m * xIntercept + line1.b;
+    } else if (
+        line1.meta.type === 'vertical' &&
+        line2.meta.type === 'vertical'
+    ) {
+        xIntercept = line1.vB === line2.vB ? line1.vB : NaN;
+        yIntercept = line1.meta.p1.y;
+    } else {
+        xIntercept = (line2.b - line1.b) / (line1.m - line2.m);
+        yIntercept = line1.m * xIntercept + line1.b;
+    }
 
     if (isNaN(xIntercept) || isNaN(yIntercept)) {
         return undefined;
     }
 
-    if (line2.meta.type === 'vertical') {
-        return {
-            x: round(yIntercept),
-            y: round(xIntercept),
-        };
-    } else {
-        return {
-            x: round(xIntercept),
-            y: round(yIntercept),
-        };
-    }
+    return {
+        x: round(xIntercept),
+        y: round(yIntercept),
+    };
 }
