@@ -5,25 +5,48 @@ import { spawnTile } from './objects/tile';
 import { spawnWallpaper } from './objects/wallpaper';
 import { spawnButton } from './objects/button';
 import { spawnPlatform } from './objects/platform';
+import type { ScriptDefinition } from './scripts/objectScripts';
 
-export type MapObject = {
-    type: 'wall' | 'platform' | 'mirror' | 'shield' | 'button';
+type Base = {
     ref: string;
     x: number;
     y: number;
-    w?: number;
-    h?: number;
-    scripts?: {
-        name: string;
-        args: any[];
-    }[];
+    scripts?: ScriptDefinition[];
 };
+
+type Dimensioned = {
+    w: number;
+    h: number;
+};
+
+type PlatformObject = Base &
+    Dimensioned & {
+        type: 'platform';
+    };
+
+type ButtonObject = Base & {
+    type: 'button';
+};
+
+type MapObject = PlatformObject | ButtonObject;
 
 export type MapDefinition = {
     name: string;
     width: number;
     objects: MapObject[];
 };
+
+function spawnEntity(def: MapObject) {
+    switch (def.type) {
+        case 'platform': {
+            return spawnPlatform(def.ref, def.x, def.y, def.w, def.h);
+        }
+
+        case 'button': {
+            return spawnButton(def.ref, def.x, def.y);
+        }
+    }
+}
 
 export function loadMap(def: MapDefinition): Entity[] {
     const objects: Entity[] = [];
@@ -58,26 +81,11 @@ export function loadMap(def: MapDefinition): Entity[] {
 
     // Spawn the objects
     for (const obj of def.objects) {
-        switch (obj.type) {
-            case 'button': {
-                objects.push(spawnButton(obj.ref, obj.x, obj.y));
-                break;
-            }
-
-            case 'platform': {
-                objects.push(
-                    spawnPlatform(
-                        obj.ref,
-                        obj.x,
-                        obj.y,
-                        obj.w ?? 0,
-                        obj.h ?? 0,
-                        obj.scripts
-                    )
-                );
-                break;
-            }
+        const entity = spawnEntity(obj);
+        if (obj.scripts) {
+            entity.attachScripts(obj.scripts);
         }
+        objects.push(entity);
     }
 
     return objects;

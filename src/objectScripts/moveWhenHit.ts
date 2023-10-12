@@ -1,17 +1,16 @@
 import type { Engine } from 'webgl-engine';
 import type { Entity } from '../objects/entity';
-import { findByRef } from './base';
+import { findByRef, type MoveWhenHitScript } from '../scripts/objectScripts';
 
 export function moveWhenHit(
     this: Entity,
     engine: Engine<unknown>,
-    args: any[]
+    def: MoveWhenHitScript
 ) {
     let { activated, counter, v } = this.properties;
-    const [ref, dist, vec] = args;
 
     // Find the ref
-    const button = findByRef(engine, ref);
+    const button = findByRef(engine, def.target_ref);
 
     if (button && button.beam.hit) {
         this.properties['activated'] = true;
@@ -21,14 +20,14 @@ export function moveWhenHit(
 
     if (activated) {
         counter += v;
-        if (counter === 100 || counter === 0) {
+        if (counter === def.dist || counter === 0) {
             v *= -1;
         }
 
-        const t = Math.sin((counter / 100.0) * 2 * Math.PI);
+        const t = Math.sin((counter / def.dist) * 2 * Math.PI);
 
-        this.physics.vx -= (t / 10) * vec[0];
-        this.physics.vy -= (t / 10) * vec[1];
+        this.physics.vx -= (t / 10) * def.move_vec[0];
+        this.physics.vy -= (t / 10) * def.move_vec[1];
 
         this.properties['counter'] = counter;
         this.properties['v'] = v;

@@ -6,8 +6,11 @@ import {
     type texture,
 } from 'webgl-engine';
 import { makeLine, type Line, type Rect } from '../algebra';
-import type { ObjectScript, ScriptDefinition } from '../objectScripts/base';
 import { moveWhenHit } from '../objectScripts/moveWhenHit';
+import {
+    applyObjectScripts,
+    type ScriptDefinition,
+} from '../scripts/objectScripts';
 
 export type Surface =
     | 'north'
@@ -123,14 +126,7 @@ export class Entity implements WorldDrawable {
     }
 
     beforeUpdate(time: number, engine: Engine<unknown>) {
-        for (const script of this.scripts) {
-            switch (script.name) {
-                case 'moveWhenHit': {
-                    moveWhenHit.call(this, engine, script.args);
-                    break;
-                }
-            }
-        }
+        applyObjectScripts.call(this, engine, this.scripts);
     }
 
     getBbox(): Rect {
@@ -233,5 +229,15 @@ export class Entity implements WorldDrawable {
             m3.translate(this.offsets[0], this.offsets[1]),
             this.additionalMatrix ?? m3.identity(),
         ]);
+    }
+
+    attachScript(script: ScriptDefinition) {
+        this.scripts.push(script);
+    }
+
+    attachScripts(scripts: ScriptDefinition[]) {
+        for (const script of scripts) {
+            this.attachScript(script);
+        }
     }
 }

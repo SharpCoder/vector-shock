@@ -16,11 +16,13 @@ export const Puzzle1: MapDefinition = {
             ref: 'platform_1',
             scripts: [
                 {
-                    name: 'moveWhenHit',
-                    args: ['button_1', 300, [0, -1]],
+                    type: 'moveWhenHit',
+                    dist: 300,
+                    move_vec: [0, -1],
+                    target_ref: 'button_1',
                 },
             ],
-            x: 600,
+            x: 800,
             y: 400,
             w: 120,
             h: 5,

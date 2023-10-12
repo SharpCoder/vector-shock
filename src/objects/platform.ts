@@ -1,15 +1,13 @@
-import { rect2D, Flatten, Repeat, zeros, rads } from 'webgl-engine';
+import { rect2D, Flatten, Repeat, zeros } from 'webgl-engine';
 import { Entity } from './entity';
-import { processJump } from '../scripts/keyboard';
-import type { ScriptDefinition } from '../objectScripts/base';
+import type { ScriptDefinition } from '../scripts/objectScripts';
 
 export function spawnPlatform(
     ref: string,
     x: number,
     y: number,
     w: number,
-    h: number,
-    scripts?: ScriptDefinition[]
+    h: number
 ): Entity {
     const platform = new Entity({
         name: `platform_${x}_${y}_${w}_${h}`,
@@ -22,7 +20,6 @@ export function spawnPlatform(
         offsets: [-w / 2, -h / 2, 0],
         position: [x, y, 0],
         rotation: zeros(),
-        scripts,
         properties: {
             activated: undefined,
         },
