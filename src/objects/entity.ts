@@ -7,9 +7,18 @@ import {
 } from 'webgl-engine';
 import { makeLine, type Line, type Rect } from '../algebra';
 
+export type Surface =
+    | 'north'
+    | 'east'
+    | 'south'
+    | 'west'
+    | 'center_vertical'
+    | 'center_horizontal';
+
 interface WorldDrawable extends Drawable {
     applyPhysics: boolean;
     collidable: boolean;
+    surfaces?: Surface[];
 }
 
 export class Entity implements WorldDrawable {
@@ -18,9 +27,6 @@ export class Entity implements WorldDrawable {
     physics = {
         vx: 0,
         vy: 0,
-        targetVx: 0,
-        accelerationY: 1,
-        movementDuration: 0,
     };
     beam = {
         hit: false,
@@ -35,6 +41,7 @@ export class Entity implements WorldDrawable {
     computeBbox?: boolean;
     children: Drawable[];
     texcoords?: number[];
+    surfaces: Surface[];
     texture?: texture;
     colors?: number[];
     hidden?: boolean;
@@ -75,6 +82,7 @@ export class Entity implements WorldDrawable {
         reflective,
         update,
         beforeDraw,
+        surfaces,
     }: WorldDrawable) {
         this.applyPhysics = applyPhysics;
         this.collidable = collidable;
@@ -98,6 +106,7 @@ export class Entity implements WorldDrawable {
         this.properties = properties ?? {};
         this.update = update;
         this.beforeDraw = beforeDraw;
+        this.surfaces = surfaces ?? ['north', 'south', 'east', 'west'];
     }
 
     getBbox(): Rect {
@@ -122,27 +131,69 @@ export class Entity implements WorldDrawable {
 
     getLines(): Line[] {
         const bbox = this.getBbox();
-        return [
-            // Horizontal line in the top
-            makeLine(bbox.x, bbox.y, bbox.x + bbox.w, bbox.y),
+        const lines = [];
 
-            // // Horizontal line in the bottom
-            makeLine(
-                bbox.x,
-                bbox.y + bbox.h - 1,
-                bbox.x + bbox.w,
-                bbox.y + bbox.h - 1
-            ),
-            // // Left line
-            makeLine(bbox.x, bbox.y - 1, bbox.x, bbox.y + bbox.h + 1),
-            // // Right line
-            makeLine(
-                bbox.x + bbox.w - 1,
-                bbox.y + bbox.h,
-                bbox.x + bbox.w + 1,
-                bbox.y
-            ),
-        ];
+        if (this.surfaces.includes('north')) {
+            // Top line (North)
+            lines.push(makeLine(bbox.x, bbox.y, bbox.x + bbox.w, bbox.y));
+        }
+
+        if (this.surfaces.includes('east')) {
+            // Right line (East)
+            lines.push(
+                makeLine(
+                    bbox.x + bbox.w - 1,
+                    bbox.y + bbox.h,
+                    bbox.x + bbox.w + 1,
+                    bbox.y
+                )
+            );
+        }
+
+        if (this.surfaces.includes('south')) {
+            // Horizontal line in the bottom (South)
+            lines.push(
+                makeLine(
+                    bbox.x,
+                    bbox.y + bbox.h - 1,
+                    bbox.x + bbox.w,
+                    bbox.y + bbox.h - 1
+                )
+            );
+        }
+
+        if (this.surfaces.includes('west')) {
+            // Left line (West)
+            lines.push(
+                makeLine(bbox.x, bbox.y - 1, bbox.x, bbox.y + bbox.h + 1)
+            );
+        }
+
+        if (this.surfaces.includes('center_horizontal')) {
+            // Left line (West)
+            lines.push(
+                makeLine(
+                    bbox.x,
+                    bbox.y + bbox.h / 2,
+                    bbox.x + bbox.w,
+                    bbox.y + bbox.h / 2
+                )
+            );
+        }
+
+        if (this.surfaces.includes('center_vertical')) {
+            // Left line (West)
+            lines.push(
+                makeLine(
+                    bbox.x + bbox.w / 2,
+                    bbox.y,
+                    bbox.x + bbox.w / 2,
+                    bbox.y + bbox.h
+                )
+            );
+        }
+
+        return lines;
     }
 
     getMatrix(): number[] {

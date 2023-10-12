@@ -9,7 +9,8 @@ import { BeamShader } from '../shaders/beam';
 import { spawnButton } from '../objects/button';
 import { applyCameraFollow } from '../scripts/cameraFollow';
 import { loadMap } from '../map';
-import { spawnTile } from '../objects/tile';
+import { spawnShielded } from '../objects/shielded';
+import { spawnMirror } from '../objects/mirror';
 
 const player = spawnPlayer({});
 export const PrototypeScene = new Scene<unknown>({
@@ -18,7 +19,7 @@ export const PrototypeScene = new Scene<unknown>({
     once: (engine) => {},
     update: function (time, engine) {
         applyRayCasting(player, PrototypeScene, engine);
-        applyPhysics(time, PrototypeScene, engine);
+        applyPhysics(PrototypeScene, engine);
         applyCameraFollow(player, engine);
     },
     init: (engine) => {
@@ -43,6 +44,11 @@ PrototypeScene.addObject(
         topPlatform.properties.activated = new Date().getTime();
     })
 );
+
+const SHIELD_OFFSET_Y = 50;
+PrototypeScene.addObject(spawnShielded(200, 150 + SHIELD_OFFSET_Y, 100, 5));
+PrototypeScene.addObject(spawnShielded(250, 100 + SHIELD_OFFSET_Y, 5, 100));
+PrototypeScene.addObject(spawnMirror(100, 220, 5, 100, ['center_vertical']));
 PrototypeScene.addObject(lowerPlatform);
 PrototypeScene.addObject(topPlatform);
 
