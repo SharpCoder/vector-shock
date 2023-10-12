@@ -12,8 +12,7 @@ export function spawnPlatform(
         name: `platform_${x}_${y}_${w}_${h}`,
         applyPhysics: false,
         collidable: true,
-        reflective: true,
-        computeBbox: true,
+        reflective: false,
         vertexes: rect2D(w, h),
         colors: Flatten(Repeat([0, 0, 0], 6)),
         offsets: [-w / 2, -h / 2, 0],
@@ -22,6 +21,7 @@ export function spawnPlatform(
         properties: {
             activated: undefined,
         },
+        surfaces: ['north', 'south', 'center_horizontal'],
         update: function (time, engine) {
             if (this.beam.hit) {
                 this.colors = Flatten(Repeat([255, 255, 255], 6));
@@ -31,16 +31,25 @@ export function spawnPlatform(
 
             engine.activeScene.updateObject(this);
 
-            if (this.properties?.activated)
-                this.position[1] =
-                    y +
-                    150 *
-                        Math.sin(
-                            ((new Date().getTime() -
-                                this.properties.activated) /
-                                1000.0) %
-                                (2 * Math.PI)
-                        );
+            if (this.properties?.activated) {
+                const t = Math.sin(
+                    ((new Date().getTime() - this.properties.activated) /
+                        1000.0) %
+                        (2 * Math.PI)
+                );
+
+                this.physics.vy = t * -2;
+                this.physics.vx = t * -2;
+                // this.position[1] =
+                //     y +
+                //     150 *
+                //         Math.sin(
+                //             ((new Date().getTime() -
+                //                 this.properties.activated) /
+                //                 1000.0) %
+                //                 (2 * Math.PI)
+                //         );
+            }
         },
     });
 

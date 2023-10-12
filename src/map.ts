@@ -42,7 +42,7 @@ export function loadMap(def: MapDefinition): Entity[] {
             tileSize,
             tileSize * 20,
             tileSize,
-            rads(90)
+            rads(-90)
         )
     );
     return objects;

@@ -100,15 +100,18 @@ export function applyRayCasting(
 
                     const rayVec = [
                         ray.meta.p2.x - ray.meta.p1.x,
-                        ray.meta.p2.y - ray.meta.p1.y,
+                        ray.meta.p1.y - ray.meta.p2.y,
                     ];
 
                     const velAlongNormal = m3.dot(rayVec, objLine.meta.normal);
+                    const expandedBbox = obj.getBbox();
+
+                    expandedBbox.h += Math.abs(obj.physics.vy);
 
                     if (
                         intercept &&
-                        velAlongNormal < 0 &&
-                        pointInRect(intercept, obj.getBbox()) &&
+                        velAlongNormal <= 0 &&
+                        pointInRect(intercept, expandedBbox) &&
                         Math.sign(targetY - oy) === Math.sign(intercept.y - oy)
                     ) {
                         const nextDist = Math.min(
@@ -170,10 +173,6 @@ export function applyRayCasting(
                 );
 
                 const mag = Math.hypot(finalIntercept.x, finalIntercept.y);
-                const normal = [
-                    -finalIntercept.y / mag,
-                    finalIntercept.x / mag,
-                ];
 
                 rays.push(resultRay);
             }

@@ -24,8 +24,6 @@ const G = 0.3;
 const THRESHOLD = FRICTION;
 const DECAY = 0.25;
 
-let disabled = false;
-
 export function applyPhysics(scene: Scene<unknown>, engine: Engine<unknown>) {
     const { gl } = engine;
     if (!gl) return;
@@ -40,10 +38,6 @@ export function applyPhysics(scene: Scene<unknown>, engine: Engine<unknown>) {
         const vy = entity.physics.vy;
         let [updatedVx, updatedVy] = calculateVelocity(vx, vy);
         const bbox = entity.getBbox();
-
-        if (engine.mousebutton != 0) disabled = false;
-
-        if (disabled) continue;
 
         if (entity.applyPhysics) {
             const velocity = convertToInterceptFormula(
@@ -109,10 +103,7 @@ export function applyPhysics(scene: Scene<unknown>, engine: Engine<unknown>) {
                             -lineIntercept.meta.normal[1] * velAlongNormal,
                         ];
 
-                        // entity.physics.vy = impulse[1] != 0 ? 0 : entity.physics.vy;
-
                         updatedVx = r(updatedVx) + r(impulse[0]);
-                        updatedVy = r(updatedVy) + r(impulse[1]);
 
                         // Positional correction
                         if (lineIntercept.meta.normal[0] > 0) {
@@ -121,9 +112,15 @@ export function applyPhysics(scene: Scene<unknown>, engine: Engine<unknown>) {
                             entity.position[0] += bbox.x - intercept.x + bbox.w;
                         }
 
-                        if (lineIntercept.meta.normal[1]) {
+                        // Only apply y-axis position correction if we are falling and the normals align.
+                        if (lineIntercept.meta.normal[1] && vy < 0) {
+                            updatedVy = r(updatedVy) + r(impulse[1]);
                             entity.position[1] -= bbox.y - intercept.y + bbox.h;
                         }
+
+                        // If the collision entity is moving, keep us with it.
+                        entity.position[0] += obj.physics.vx;
+                        entity.position[1] -= obj.physics.vy;
                     }
                 }
             }
@@ -133,6 +130,9 @@ export function applyPhysics(scene: Scene<unknown>, engine: Engine<unknown>) {
 
             entity.physics.vx = updatedVx;
             entity.physics.vy = updatedVy;
+        } else {
+            entity.position[0] += vx;
+            entity.position[1] -= vy;
         }
     }
 }

@@ -154,10 +154,10 @@ export class Entity implements WorldDrawable {
             // Horizontal line in the bottom (South)
             lines.push(
                 makeLine(
-                    bbox.x,
-                    bbox.y + bbox.h - 1,
                     bbox.x + bbox.w,
-                    bbox.y + bbox.h - 1
+                    bbox.y + bbox.h,
+                    bbox.x,
+                    bbox.y + bbox.h
                 )
             );
         }
