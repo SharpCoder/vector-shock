@@ -142,9 +142,9 @@ export class Entity implements WorldDrawable {
             // Right line (East)
             lines.push(
                 makeLine(
-                    bbox.x + bbox.w - 1,
+                    bbox.x + bbox.w,
                     bbox.y + bbox.h,
-                    bbox.x + bbox.w + 1,
+                    bbox.x + bbox.w,
                     bbox.y
                 )
             );
@@ -186,9 +186,9 @@ export class Entity implements WorldDrawable {
             lines.push(
                 makeLine(
                     bbox.x + bbox.w / 2,
-                    bbox.y,
+                    bbox.y + bbox.h,
                     bbox.x + bbox.w / 2,
-                    bbox.y + bbox.h
+                    bbox.y
                 )
             );
         }

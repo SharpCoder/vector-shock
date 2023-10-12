@@ -7,6 +7,8 @@ import {
     Repeat,
     zeros,
     rect2D,
+    degs,
+    m3,
 } from 'webgl-engine';
 import { Entity } from '../objects/entity';
 import { INFINITY, getScreenScale } from '../constants';
@@ -20,8 +22,8 @@ import {
 } from '../algebra';
 
 const RAY_ENTITIES: Record<number, Entity> = {};
-const RAY_THICKNESS = 4;
-const MAX_RAYS = 20;
+const RAY_THICKNESS = 3;
+const MAX_RAYS = 2;
 
 // The responsibility of this script is to render one or more rays to the map based on
 // the angle which the player is aiming, and whether the raytracing button is actively
@@ -96,8 +98,16 @@ export function applyRayCasting(
                         objLine
                     );
 
+                    const rayVec = [
+                        ray.meta.p2.x - ray.meta.p1.x,
+                        ray.meta.p2.y - ray.meta.p1.y,
+                    ];
+
+                    const velAlongNormal = m3.dot(rayVec, objLine.meta.normal);
+
                     if (
                         intercept &&
+                        velAlongNormal < 0 &&
                         pointInRect(intercept, obj.getBbox()) &&
                         Math.sign(targetY - oy) === Math.sign(intercept.y - oy)
                     ) {
@@ -152,16 +162,21 @@ export function applyRayCasting(
                         sign * Math.sign(ray.m) * (a - b) * 4;
                     targetY = finalIntercept.y + sign * (c - d) * 4;
                 }
+
                 ox = finalIntercept.x;
                 oy = finalIntercept.y;
-
-                rays.push(
-                    convertToInterceptFormula(
-                        makeLine(ox, oy, targetX, targetY)
-                    )
+                const resultRay = convertToInterceptFormula(
+                    makeLine(ox, oy, targetX, targetY)
                 );
-            }
 
+                const mag = Math.hypot(finalIntercept.x, finalIntercept.y);
+                const normal = [
+                    -finalIntercept.y / mag,
+                    finalIntercept.x / mag,
+                ];
+
+                rays.push(resultRay);
+            }
             scene.updateObject(rayEntity);
             rayIndex += 1;
         }

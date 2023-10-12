@@ -20,6 +20,7 @@ export type LineInterceptFormula = {
         type: 'vertical' | 'normal';
         p1: Point;
         p2: Point;
+        normal: number[];
     };
 };
 
@@ -30,12 +31,8 @@ export type Rect = {
     h: number;
 };
 
-function round(v: number) {
-    return Math.round(v * 1000) / 1000;
-}
-
 export function point(x: number, y: number) {
-    return { x, y };
+    return { x: r(x), y: r(y) };
 }
 
 /**
@@ -127,17 +124,23 @@ export function convertToInterceptFormula(line: Line): LineInterceptFormula {
 
     // Vertical parameters (only applicable if the two points in the line are not the same)
     const vM = line.p1.y != line.p2.y ? 0 : NaN;
-    const vB = line.p1.y != line.p2.y ? line.p1.x : NaN;
+    const vB = line.p1.y != line.p2.y ? line.p2.x : NaN;
+
+    // Calculate the normal
+    const n_vec = [line.p2.x - line.p1.x, line.p2.y - line.p1.y];
+    const n_mag = Math.hypot(n_vec[0], n_vec[1]);
+    const normal = [-r(n_vec[1] / n_mag), r(n_vec[0] / n_mag)];
 
     return {
-        m,
-        b,
-        vM,
-        vB,
+        m: r(m),
+        b: r(b),
+        vM: r(vM),
+        vB: r(vB),
         meta: {
             type: vertical ? 'vertical' : 'normal',
             p1: line.p1,
             p2: line.p2,
+            normal,
         },
     };
 }
@@ -171,7 +174,7 @@ export function lineIntersection(
     }
 
     return {
-        x: round(xIntercept),
-        y: round(yIntercept),
+        x: r(xIntercept),
+        y: r(yIntercept),
     };
 }

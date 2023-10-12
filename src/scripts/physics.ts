@@ -53,12 +53,9 @@ export function applyPhysics(scene: Scene<unknown>, engine: Engine<unknown>) {
             // Do collision gud
             for (const obj of collidables) {
                 for (const line of obj.getLines()) {
-                    const intercept = lineIntersection(
-                        velocity,
-                        convertToInterceptFormula(line)
-                    );
+                    const lineIntercept = convertToInterceptFormula(line);
+                    const intercept = lineIntersection(velocity, lineIntercept);
 
-                    // if (intercept) console.log({ intercept, bbox, line });
                     if (
                         intercept &&
                         (segmentsIntersect(
@@ -99,29 +96,17 @@ export function applyPhysics(scene: Scene<unknown>, engine: Engine<unknown>) {
                         const vec = [updatedVx, updatedVy];
 
                         // Calculate the vector of the surface
-                        const surface_vec = [
-                            line.p2.x - line.p1.x,
-                            line.p2.y - line.p1.y,
-                        ];
-
-                        const surface_mag = Math.hypot(
-                            surface_vec[0],
-                            surface_vec[1]
+                        const velAlongNormal = m3.dot(
+                            vec,
+                            lineIntercept.meta.normal
                         );
-
-                        const surface_normal = [
-                            -r(surface_vec[1] / surface_mag),
-                            r(surface_vec[0] / surface_mag),
-                        ];
-
-                        const velAlongNormal = m3.dot(vec, surface_normal);
                         if (velAlongNormal > 0) {
                             continue;
                         }
 
                         const impulse = [
-                            -surface_normal[0] * velAlongNormal,
-                            -surface_normal[1] * velAlongNormal,
+                            -lineIntercept.meta.normal[0] * velAlongNormal,
+                            -lineIntercept.meta.normal[1] * velAlongNormal,
                         ];
 
                         // entity.physics.vy = impulse[1] != 0 ? 0 : entity.physics.vy;
@@ -129,29 +114,14 @@ export function applyPhysics(scene: Scene<unknown>, engine: Engine<unknown>) {
                         updatedVx = r(updatedVx) + r(impulse[0]);
                         updatedVy = r(updatedVy) + r(impulse[1]);
 
-                        // console.log(impulse[1], {
-                        //     name: obj.name,
-                        //     vx,
-                        //     vy,
-                        //     updatedVx,
-                        //     updatedVy,
-                        //     velocity,
-                        //     bbox,
-                        //     vec,
-                        //     surface_normal,
-                        //     intercept,
-                        //     velAlongNormal,
-                        //     impulse,
-                        // });
-
                         // Positional correction
-                        if (surface_normal[0] > 0) {
+                        if (lineIntercept.meta.normal[0] > 0) {
                             entity.position[0] += bbox.x - intercept.x;
-                        } else if (surface_normal[0] < 0) {
+                        } else if (lineIntercept.meta.normal[0] < 0) {
                             entity.position[0] += bbox.x - intercept.x + bbox.w;
                         }
 
-                        if (surface_normal[1]) {
+                        if (lineIntercept.meta.normal[1]) {
                             entity.position[1] -= bbox.y - intercept.y + bbox.h;
                         }
                     }
@@ -163,9 +133,6 @@ export function applyPhysics(scene: Scene<unknown>, engine: Engine<unknown>) {
 
             entity.physics.vx = updatedVx;
             entity.physics.vy = updatedVy;
-
-            engine.debug(`vx: ${r(updatedVx)}`);
-            engine.debug(`vy: ${r(updatedVy)}`);
         }
     }
 }
