@@ -23,6 +23,8 @@ export function loadMap(def: MapDefinition): Entity[] {
             tileSize
         )
     );
+
+    // Wall
     objects.push(
         spawnTile(
             SCREEN_WIDTH,
@@ -33,6 +35,15 @@ export function loadMap(def: MapDefinition): Entity[] {
             rads(90)
         )
     );
-
+    objects.push(
+        spawnTile(
+            tileSize,
+            SCREEN_HEIGHT - tileSize * 10,
+            tileSize,
+            tileSize * 20,
+            tileSize,
+            rads(90)
+        )
+    );
     return objects;
 }

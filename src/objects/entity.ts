@@ -120,31 +120,27 @@ export class Entity implements WorldDrawable {
         }
     }
 
-    getLine(): Line {
-        const bbox = this.getBbox();
-        return makeLine(bbox.x, bbox.y, bbox.x + bbox.w, bbox.y);
-    }
-
     getLines(): Line[] {
         const bbox = this.getBbox();
         return [
-            // Horizontal line in the center
-            makeLine(bbox.x, bbox.y + 1, bbox.x + bbox.w, bbox.y + 1),
-            // Horizontal line in the bottom
+            // Horizontal line in the top
+            makeLine(bbox.x, bbox.y, bbox.x + bbox.w, bbox.y),
+
+            // // Horizontal line in the bottom
+            // makeLine(
+            //     bbox.x,
+            //     bbox.y + bbox.h - 1,
+            //     bbox.x + bbox.w,
+            //     bbox.y + bbox.h - 1
+            // ),
+            // // Left line
+            makeLine(bbox.x, bbox.y - 1, bbox.x, bbox.y + bbox.h + 1),
+            // // Right line
             makeLine(
-                bbox.x,
-                bbox.y + bbox.h - 1,
-                bbox.x + bbox.w,
-                bbox.y + bbox.h - 1
-            ),
-            // Left line
-            makeLine(bbox.x, bbox.y, bbox.x, bbox.y + bbox.h - 1),
-            // Right line
-            makeLine(
-                bbox.x + bbox.w,
-                bbox.y,
-                bbox.x + bbox.w,
-                bbox.y + bbox.h - 1
+                bbox.x + bbox.w - 1,
+                bbox.y + bbox.h,
+                bbox.x + bbox.w + 1,
+                bbox.y
             ),
         ];
     }

@@ -74,16 +74,6 @@ export function applyRayCasting(
                 RAY_ENTITIES[rayIndex] = createLine(rayIndex);
             }
 
-            // Create a vertical ray also, for some code paths
-            const verticalRay = convertToInterceptFormula(
-                makeLine(
-                    ray.meta.p1.y,
-                    ray.meta.p1.x,
-                    ray.meta.p2.y,
-                    ray.meta.p2.x
-                )
-            );
-
             // Update the vertexes and positions of the object
             let dist = INFINITY;
             let hitEntity = undefined;
@@ -101,10 +91,10 @@ export function applyRayCasting(
                 // Calculate the ray against each line segment that comprises this entity.
                 for (const line of objLines) {
                     const objLine = convertToInterceptFormula(line);
-                    const intercept: Point | undefined =
-                        objLine.meta.type === 'normal'
-                            ? lineIntersection(ray, objLine)
-                            : lineIntersection(verticalRay, objLine);
+                    const intercept: Point | undefined = lineIntersection(
+                        ray,
+                        objLine
+                    );
 
                     if (
                         intercept &&

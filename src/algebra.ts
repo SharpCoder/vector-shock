@@ -1,4 +1,5 @@
 import { fly } from 'svelte/transition';
+import { r } from 'webgl-engine';
 
 export type Point = {
     x: number;
@@ -107,12 +108,12 @@ export function pointInRect(p: Point, rect: Rect): boolean {
 export function makeLine(x1: number, y1: number, x2: number, y2: number): Line {
     return {
         p1: {
-            x: x1,
-            y: y1,
+            x: r(x1),
+            y: r(y1),
         },
         p2: {
-            x: x2,
-            y: y2,
+            x: r(x2),
+            y: r(y2),
         },
     };
 }

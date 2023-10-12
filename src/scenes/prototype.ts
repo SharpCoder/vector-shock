@@ -34,14 +34,16 @@ export const PrototypeScene = new Scene<unknown>({
 });
 
 const topPlatform = spawnPlatform(800, SCREEN_HEIGHT - 500, 120, 5);
+const lowerPlatform = spawnPlatform(600, SCREEN_HEIGHT - 180, 120, 5);
+
+PrototypeScene.addObject(player);
 
 PrototypeScene.addObject(
     spawnButton(200, 100, () => {
         topPlatform.properties.activated = new Date().getTime();
     })
 );
-PrototypeScene.addObject(player);
-PrototypeScene.addObject(spawnPlatform(600, SCREEN_HEIGHT - 180, 120, 5));
+PrototypeScene.addObject(lowerPlatform);
 PrototypeScene.addObject(topPlatform);
 
 const map = loadMap({

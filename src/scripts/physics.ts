@@ -13,13 +13,13 @@ import {
 } from '../algebra';
 
 export const MAX_VEL_Y = 100;
-export const MAX_VEL_X = 4;
+export const MAX_VEL_X = 6;
 
-export const IMPULSE_VEL_X = 4;
-export const IMPULSE_VEL_Y = 30;
+export const IMPULSE_VEL_X = 6;
+export const IMPULSE_VEL_Y = 40;
 
 const ACCELERATION = 3.0;
-const FRICTION = 0.35;
+const FRICTION = 0.45;
 const G = 0.25;
 const THRESHOLD = FRICTION;
 const DECAY = 0.25;
@@ -65,7 +65,7 @@ function colliding(a: Entity, b: Entity) {
     );
 }
 
-function getEdge(entity: Entity): Point {
+function getEdge(entity: Entity, p: Point): Point {
     // Compute the vector
     const bbox = entity.getBbox();
     const v = [
@@ -83,11 +83,13 @@ function getEdge(entity: Entity): Point {
 
     // Find the closest point
     const sorted = points
-        .map((p) => [dist(p, v), p] as [number, number[]])
+        .map((p) => [dist(p, p), p] as [number, number[]])
         .sort((a, b) => a[0] - b[0]);
 
     return point(sorted[0][1][0], sorted[0][1][1]);
 }
+
+let disabled = false;
 
 export function applyPhysics(
     time: number,
@@ -96,8 +98,6 @@ export function applyPhysics(
 ) {
     const { gl } = engine;
     if (!gl) return;
-
-    const screenHeight = SCREEN_HEIGHT;
 
     const collidables: Entity[] = (scene.objects as Entity[]).filter(
         (obj) => (obj as Entity).collidable
@@ -110,88 +110,133 @@ export function applyPhysics(
         let [updatedVx, updatedVy] = calculateVelocity(vx, vy);
         const bbox = entity.getBbox();
 
-        if (entity.applyPhysics) {
-            // Find all lines in the scene, and calculate intercepts
+        if (engine.mousebutton != 0) disabled = false;
 
+        if (disabled) continue;
+
+        if (entity.applyPhysics) {
             const velocity = convertToInterceptFormula(
-                makeLine(
-                    bbox.x + bbox.w / 2,
-                    bbox.y + bbox.h / 2,
-                    bbox.x + bbox.w / 2 + updatedVx,
-                    bbox.y + bbox.h / 2 - updatedVy
-                )
+                makeLine(bbox.x, bbox.y, bbox.x + updatedVx, bbox.y - updatedVy)
             );
 
-            const lines = collidables
-                .filter((obj) => colliding(entity, obj))
-                .flatMap((obj) => obj.getLines());
+            // const generousBbox: Rect = {
+            //     x: bbox.x - Math.abs(updatedVx) - bbox.w,
+            //     y: bbox.y - Math.abs(updatedVy) - bbox.h,
+            //     w: bbox.w * 2 + Math.abs(updatedVx) * 2,
+            //     h: bbox.h * 2 + Math.abs(updatedVy) * 2,
+            // };
+
+            // const lines = collidables
+            //     // .filter((obj) => colliding(entity, obj))
+            //     .flatMap((obj) => obj.getLines());
 
             // Do collision gud
-            for (const line of lines) {
-                const intercept = lineIntersection(
-                    velocity,
-                    convertToInterceptFormula(line)
-                );
-
-                if (
-                    intercept &&
-                    segmentsIntersect(
-                        velocity.meta.p1,
-                        velocity.meta.p2,
-                        line.p1,
-                        line.p2
-                    )
-                ) {
-                    // Calculate the intercept vector
-                    const vec = [updatedVx, updatedVy];
-
-                    // Calculate the vector of the surface
-                    const surface_vec = [
-                        line.p2.x - line.p1.x,
-                        line.p2.y - line.p1.y,
-                    ];
-
-                    const surface_mag = Math.hypot(
-                        surface_vec[0],
-                        surface_vec[1]
+            for (const obj of collidables.filter((obj) =>
+                colliding(entity, obj)
+            )) {
+                for (const line of obj.getLines()) {
+                    const intercept = lineIntersection(
+                        velocity,
+                        convertToInterceptFormula(line)
                     );
 
-                    const surface_normal = [
-                        -surface_vec[1] / surface_mag,
-                        surface_vec[0] / surface_mag,
-                    ];
+                    // if (intercept) console.log({ intercept, bbox, line });
+                    if (
+                        intercept &&
+                        (segmentsIntersect(
+                            point(bbox.x, bbox.y),
+                            point(bbox.x, bbox.y + bbox.h - updatedVy),
+                            line.p1,
+                            line.p2
+                        ) ||
+                            segmentsIntersect(
+                                point(bbox.x + bbox.w, bbox.y),
+                                point(
+                                    bbox.x + bbox.w,
+                                    bbox.y + bbox.h - updatedVy
+                                ),
+                                line.p1,
+                                line.p2
+                            ) ||
+                            segmentsIntersect(
+                                point(bbox.x, bbox.y),
+                                point(bbox.x + bbox.w + updatedVx, bbox.y),
+                                line.p1,
+                                line.p2
+                            ) ||
+                            segmentsIntersect(
+                                point(bbox.x, bbox.y),
+                                point(bbox.x + updatedVx, bbox.y),
+                                line.p1,
+                                line.p2
+                            ))
+                    ) {
+                        // Calculate the intercept vector
+                        const vec = [updatedVx, updatedVy];
 
-                    const velAlongNormal = m3.dot(vec, surface_normal);
-                    if (velAlongNormal > 0) {
-                        continue;
+                        // Calculate the vector of the surface
+                        const surface_vec = [
+                            line.p2.x - line.p1.x,
+                            line.p2.y - line.p1.y,
+                        ];
+
+                        const surface_mag = Math.hypot(
+                            surface_vec[0],
+                            surface_vec[1]
+                        );
+
+                        const surface_normal = [
+                            -r(surface_vec[1] / surface_mag),
+                            r(surface_vec[0] / surface_mag),
+                        ];
+
+                        const velAlongNormal = m3.dot(vec, surface_normal);
+                        if (velAlongNormal > 0) {
+                            continue;
+                        }
+
+                        const impulse = [
+                            -surface_normal[0] * velAlongNormal,
+                            -surface_normal[1] * velAlongNormal,
+                        ];
+
+                        // entity.physics.vy = impulse[1] != 0 ? 0 : entity.physics.vy;
+
+                        updatedVx = r(updatedVx) + r(impulse[0]);
+                        updatedVy = r(updatedVy) + r(impulse[1]);
+
+                        console.log(impulse[1], {
+                            name: obj.name,
+                            vx,
+                            vy,
+                            updatedVx,
+                            updatedVy,
+                            velocity,
+                            bbox,
+                            vec,
+                            surface_normal,
+                            intercept,
+                            velAlongNormal,
+                            impulse,
+                        });
+
+                        // Positional correction
+                        if (surface_normal[0]) {
+                            entity.position[0] +=
+                                bbox.x - intercept.x + bbox.w / 2;
+                        }
+
+                        if (surface_normal[1])
+                            entity.position[1] -= bbox.y - intercept.y + bbox.h;
+                        // disabled = true;
+                        // updatedVy = 0;
+                        // throw 'Omg';
+
+                        // disabled = true;
                     }
-
-                    const impulse = [
-                        -surface_normal[0] * velAlongNormal,
-                        -surface_normal[1] * velAlongNormal,
-                    ];
-
-                    // entity.physics.vy = impulse[1] != 0 ? 0 : entity.physics.vy;
-
-                    // console.log(impulse[1], {
-                    //     vx,
-                    //     vy,
-                    //     updatedVx,
-                    //     updatedVy,
-                    //     velocity,
-                    //     edge,
-                    //     bbox,
-                    //     vec,
-                    //     surface_normal,
-                    //     intercept,
-                    //     velAlongNormal,
-                    //     impulse,
-                    // });
-
-                    updatedVx += impulse[0];
-                    updatedVy += impulse[1];
                 }
             }
+
             // Do collision
             // TODO: This is not going to work for walls
             // const activeCollisions = collidables
@@ -255,9 +300,6 @@ function calculateVelocity(vx: number, vy: number): [number, number] {
     const frac = (0.05 + Math.abs(nextVy / MAX_VEL_Y)) * 40;
 
     if (frac > 0.25) accel *= frac;
-
-    // @ts-ignore
-    window['gameEngine'].debug(`frac ${r(frac)}`);
 
     if (nextVy > -MAX_VEL_Y) {
         nextVy -= accel;
