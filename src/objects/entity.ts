@@ -127,12 +127,12 @@ export class Entity implements WorldDrawable {
             makeLine(bbox.x, bbox.y, bbox.x + bbox.w, bbox.y),
 
             // // Horizontal line in the bottom
-            // makeLine(
-            //     bbox.x,
-            //     bbox.y + bbox.h - 1,
-            //     bbox.x + bbox.w,
-            //     bbox.y + bbox.h - 1
-            // ),
+            makeLine(
+                bbox.x,
+                bbox.y + bbox.h - 1,
+                bbox.x + bbox.w,
+                bbox.y + bbox.h - 1
+            ),
             // // Left line
             makeLine(bbox.x, bbox.y - 1, bbox.x, bbox.y + bbox.h + 1),
             // // Right line

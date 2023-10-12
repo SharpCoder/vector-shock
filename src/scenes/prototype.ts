@@ -17,8 +17,8 @@ export const PrototypeScene = new Scene<unknown>({
     shaders: [DefaultShader, BeamShader],
     once: (engine) => {},
     update: function (time, engine) {
-        applyPhysics(time, PrototypeScene, engine);
         applyRayCasting(player, PrototypeScene, engine);
+        applyPhysics(time, PrototypeScene, engine);
         applyCameraFollow(player, engine);
     },
     init: (engine) => {
