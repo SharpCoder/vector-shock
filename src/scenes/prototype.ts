@@ -11,6 +11,7 @@ import { applyCameraFollow } from '../scripts/cameraFollow';
 import { loadMap } from '../map';
 import { spawnShielded } from '../objects/shielded';
 import { spawnMirror } from '../objects/mirror';
+import { Puzzle1 } from '../levels/puzzle_1';
 
 const player = spawnPlayer({});
 export const PrototypeScene = new Scene<unknown>({
@@ -34,29 +35,27 @@ export const PrototypeScene = new Scene<unknown>({
     components: 2,
 });
 
-const topPlatform = spawnPlatform(800, SCREEN_HEIGHT - 500, 120, 5);
-const lowerPlatform = spawnPlatform(600, SCREEN_HEIGHT - 180, 120, 5);
+// const topPlatform = spawnPlatform(800, SCREEN_HEIGHT - 500, 120, 5);
+// const lowerPlatform = spawnPlatform(600, SCREEN_HEIGHT - 180, 120, 5);
 
 PrototypeScene.addObject(player);
 
-PrototypeScene.addObject(
-    spawnButton(200, 100, () => {
-        topPlatform.properties.activated = new Date().getTime();
-    })
-);
+// PrototypeScene.addObject(
+//     spawnButton(200, 100, () => {
+//         topPlatform.properties.activated = new Date().getTime();
+//     })
+// );
 
-const SHIELD_OFFSET_Y = 50;
-PrototypeScene.addObject(spawnShielded(200, 150 + SHIELD_OFFSET_Y, 100, 5));
-PrototypeScene.addObject(
-    spawnShielded(250, 100 + SHIELD_OFFSET_Y + 2.5, 5, 100)
-);
-PrototypeScene.addObject(spawnMirror(110, 220, 5, 100, ['center_vertical']));
-PrototypeScene.addObject(lowerPlatform);
-PrototypeScene.addObject(topPlatform);
+// const SHIELD_OFFSET_Y = 50;
+// PrototypeScene.addObject(spawnShielded(200, 150 + SHIELD_OFFSET_Y, 100, 5));
+// PrototypeScene.addObject(
+//     spawnShielded(250, 100 + SHIELD_OFFSET_Y + 2.5, 5, 100)
+// );
+// PrototypeScene.addObject(spawnMirror(110, 220, 5, 100, ['center_vertical']));
+// PrototypeScene.addObject(lowerPlatform);
+// PrototypeScene.addObject(topPlatform);
 
-const map = loadMap({
-    width: SCREEN_WIDTH * 4,
-});
+const map = loadMap(Puzzle1);
 
 for (const segment of map) {
     PrototypeScene.addObject(segment);

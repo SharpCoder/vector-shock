@@ -6,6 +6,8 @@ import {
     type texture,
 } from 'webgl-engine';
 import { makeLine, type Line, type Rect } from '../algebra';
+import type { ObjectScript, ScriptDefinition } from '../objectScripts/base';
+import { moveWhenHit } from '../objectScripts/moveWhenHit';
 
 export type Surface =
     | 'north'
@@ -19,6 +21,8 @@ interface WorldDrawable extends Drawable {
     applyPhysics: boolean;
     collidable: boolean;
     surfaces?: Surface[];
+    ref?: string;
+    scripts?: ScriptDefinition[];
 }
 
 export class Entity implements WorldDrawable {
@@ -27,14 +31,13 @@ export class Entity implements WorldDrawable {
     physics = {
         vx: 0,
         vy: 0,
-        targetVx: 0,
-        targetVy: 0,
     };
     beam = {
         hit: false,
     };
 
     name: string;
+    ref?: string;
     position: number[];
     rotation: number[];
     offsets: number[];
@@ -53,6 +56,7 @@ export class Entity implements WorldDrawable {
     additionalMatrix?: number[];
     zIndex?: number;
     properties: Record<any, any>;
+    scripts: ScriptDefinition[];
     _parent?: Entity;
     _bbox?: bbox;
     _computed?: {
@@ -66,6 +70,7 @@ export class Entity implements WorldDrawable {
         collidable,
         computeBbox,
         name,
+        ref,
         visible,
         hidden,
         position,
@@ -85,6 +90,7 @@ export class Entity implements WorldDrawable {
         update,
         beforeDraw,
         surfaces,
+        scripts,
     }: WorldDrawable) {
         this.applyPhysics = applyPhysics;
         this.collidable = collidable;
@@ -106,9 +112,25 @@ export class Entity implements WorldDrawable {
         this.zIndex = zIndex ?? 0;
         this.reflective = reflective ?? false;
         this.properties = properties ?? {};
-        this.update = update;
         this.beforeDraw = beforeDraw;
         this.surfaces = surfaces ?? ['north', 'south', 'east', 'west'];
+        this.ref = ref;
+        this.scripts = scripts ?? [];
+        this.update = (time, engine) => {
+            this.beforeUpdate(time, engine);
+            update && update.call(this, time, engine);
+        };
+    }
+
+    beforeUpdate(time: number, engine: Engine<unknown>) {
+        for (const script of this.scripts) {
+            switch (script.name) {
+                case 'moveWhenHit': {
+                    moveWhenHit.call(this, engine, script.args);
+                    break;
+                }
+            }
+        }
     }
 
     getBbox(): Rect {

@@ -1,12 +1,18 @@
 import { rect2D, Flatten, Repeat, zeros, rads } from 'webgl-engine';
 import { Entity } from './entity';
 
-export function spawnButton(x: number, y: number, onHit?: () => void): Entity {
+export function spawnButton(
+    ref: string | undefined,
+    x: number,
+    y: number,
+    onHit?: () => void
+): Entity {
     let hit = false;
     const w = 15,
         h = 15;
     const button = new Entity({
         name: `button_${x}_${y}`,
+        ref,
         applyPhysics: false,
         collidable: true,
         vertexes: rect2D(w, h),

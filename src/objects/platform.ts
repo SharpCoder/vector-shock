@@ -1,18 +1,19 @@
 import { rect2D, Flatten, Repeat, zeros, rads } from 'webgl-engine';
 import { Entity } from './entity';
 import { processJump } from '../scripts/keyboard';
+import type { ScriptDefinition } from '../objectScripts/base';
 
 export function spawnPlatform(
+    ref: string,
     x: number,
     y: number,
     w: number,
-    h: number
+    h: number,
+    scripts?: ScriptDefinition[]
 ): Entity {
-    let counter = 0;
-    let v = 1;
-
     const platform = new Entity({
         name: `platform_${x}_${y}_${w}_${h}`,
+        ref,
         applyPhysics: false,
         collidable: true,
         reflective: false,
@@ -21,6 +22,7 @@ export function spawnPlatform(
         offsets: [-w / 2, -h / 2, 0],
         position: [x, y, 0],
         rotation: zeros(),
+        scripts,
         properties: {
             activated: undefined,
         },
@@ -33,27 +35,6 @@ export function spawnPlatform(
             }
 
             engine.activeScene.updateObject(this);
-
-            if (this.properties?.activated) {
-                counter += v;
-                if (counter === 100 || counter === 0) {
-                    v *= -1;
-                }
-
-                const t = Math.sin((counter / 100.0) * 2 * Math.PI);
-
-                this.physics.vy -= t / 10;
-                this.physics.vx -= t / 10;
-                // this.position[1] =
-                //     y +
-                //     150 *
-                //         Math.sin(
-                //             ((new Date().getTime() -
-                //                 this.properties.activated) /
-                //                 1000.0) %
-                //                 (2 * Math.PI)
-                //         );
-            }
         },
     });
 

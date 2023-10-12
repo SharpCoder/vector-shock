@@ -39,7 +39,7 @@ export function spawnTile(
         reflective: false,
         vertexes: rect2D(w, h),
         colors: Flatten([Repeat([255, 0, 0], 6)]),
-        offsets: [-w / 2, -h / 2, 0],
+        offsets: [0, 0, 0],
         position: [x, y, 0],
         rotation: zeros(),
         preMatrix: m3.rotate(rotation ?? 0),
