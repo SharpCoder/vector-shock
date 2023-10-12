@@ -31,6 +31,12 @@ export type Rect = {
     h: number;
 };
 
+export function lpf(old: number, updated: number, perc: number) {
+    perc = Math.min(Math.max(perc, 0), 1);
+    console.log(old, updated, perc, old * (1.0 - perc) + updated * perc);
+    return old * (1.0 - perc) + updated * perc;
+}
+
 export function point(x: number, y: number) {
     return { x: r(x), y: r(y) };
 }

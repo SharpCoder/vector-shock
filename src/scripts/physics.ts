@@ -10,6 +10,7 @@ import {
     type Point,
     type Rect,
     segmentsIntersect,
+    lpf,
 } from '../algebra';
 
 export const MAX_VEL_Y = 100;
@@ -18,15 +19,29 @@ export const MAX_VEL_X = 6;
 export const IMPULSE_VEL_X = 6;
 export const IMPULSE_VEL_Y = 45;
 
-const ACCELERATION = 3.0;
 const FRICTION = 0.45;
 const G = 0.3;
-const THRESHOLD = FRICTION;
-const DECAY = 0.25;
+
+let dilationTime: number | undefined = undefined;
 
 export function applyPhysics(scene: Scene<unknown>, engine: Engine<unknown>) {
     const { gl } = engine;
     if (!gl) return;
+
+    if (!engine.keymap['shift']) {
+        dilationTime = undefined;
+    } else {
+        dilationTime = dilationTime ?? new Date().getTime();
+    }
+
+    let timeDilation = 1;
+    if (dilationTime) {
+        timeDilation = lpf(
+            0.01,
+            1.0,
+            (new Date().getTime() - dilationTime) / 4000
+        );
+    }
 
     const collidables: Entity[] = (scene.objects as Entity[]).filter(
         (obj) => (obj as Entity).collidable
@@ -125,14 +140,18 @@ export function applyPhysics(scene: Scene<unknown>, engine: Engine<unknown>) {
                 }
             }
 
-            entity.position[0] += updatedVx;
-            entity.position[1] -= updatedVy;
+            // updatedVx *= timeDilation;
+            // updatedVy *= timeDilation;
 
-            entity.physics.vx = updatedVx;
-            entity.physics.vy = updatedVy;
+            entity.position[0] += updatedVx * timeDilation;
+            entity.position[1] -= updatedVy * timeDilation;
+
+            // Calculate new velocity vectors
+            entity.physics.vx = vx + (updatedVx - vx) * timeDilation;
+            entity.physics.vy = vy + (updatedVy - vy) * timeDilation;
         } else {
-            entity.position[0] += vx;
-            entity.position[1] -= vy;
+            entity.position[0] += vx * timeDilation;
+            entity.position[1] -= vy * timeDilation;
         }
     }
 }

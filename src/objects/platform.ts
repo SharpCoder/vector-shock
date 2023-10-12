@@ -8,6 +8,9 @@ export function spawnPlatform(
     w: number,
     h: number
 ): Entity {
+    let counter = 0;
+    let v = 1;
+
     const platform = new Entity({
         name: `platform_${x}_${y}_${w}_${h}`,
         applyPhysics: false,
@@ -32,14 +35,15 @@ export function spawnPlatform(
             engine.activeScene.updateObject(this);
 
             if (this.properties?.activated) {
-                const t = Math.sin(
-                    ((new Date().getTime() - this.properties.activated) /
-                        1000.0) %
-                        (2 * Math.PI)
-                );
+                counter += v;
+                if (counter === 100 || counter === 0) {
+                    v *= -1;
+                }
 
-                this.physics.vy = t * -2;
-                this.physics.vx = t * -2;
+                const t = Math.sin((counter / 100.0) * 2 * Math.PI);
+
+                this.physics.vy -= t / 10;
+                this.physics.vx -= t / 10;
                 // this.position[1] =
                 //     y +
                 //     150 *

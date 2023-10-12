@@ -27,6 +27,8 @@ export class Entity implements WorldDrawable {
     physics = {
         vx: 0,
         vy: 0,
+        targetVx: 0,
+        targetVy: 0,
     };
     beam = {
         hit: false,
