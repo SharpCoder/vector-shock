@@ -1,5 +1,6 @@
 import { rect2D, Flatten, Repeat, zeros, rads } from 'webgl-engine';
 import { Entity } from './entity';
+import { TIME_DILATED } from '../scripts/physics';
 
 export function spawnButton(
     ref: string | undefined,
@@ -26,7 +27,7 @@ export function spawnButton(
                 onHit && onHit();
             }
 
-            if (hit) {
+            if (button.beam.hit) {
                 this.colors = Flatten(Repeat([255, 255, 255], 6));
             } else {
                 this.colors = Flatten(Repeat([255, 0, 255], 6));

@@ -15,9 +15,9 @@ import {
 
 export const MAX_VEL_Y = 100;
 export const MAX_VEL_X = 6;
-
 export const IMPULSE_VEL_X = 6;
 export const IMPULSE_VEL_Y = 45;
+export let TIME_DILATED = false;
 
 const FRICTION = 0.45;
 const G = 0.3;
@@ -41,6 +41,13 @@ export function applyPhysics(scene: Scene<unknown>, engine: Engine<unknown>) {
             1.0,
             (new Date().getTime() - dilationTime) / 4000
         );
+    }
+
+    TIME_DILATED = timeDilation < 1.0;
+    for (const obj of scene.objects as Entity[]) {
+        if (!TIME_DILATED) {
+            obj.beam.hit = false;
+        }
     }
 
     const collidables: Entity[] = (scene.objects as Entity[]).filter(

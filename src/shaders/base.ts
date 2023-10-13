@@ -89,7 +89,12 @@ export function createShader(template: ProgramTemplate): ProgramTemplate {
             },
             u_visible: (engine, loc, obj) => {
                 const { gl } = engine;
-                gl.uniform1i(loc, obj.name.startsWith('ray_') ? 0 : 1);
+                const hiddenNames = ['ray_', 'wallpaper'];
+                const hidden = hiddenNames.some((name) =>
+                    obj.name.startsWith(name)
+                );
+
+                gl.uniform1i(loc, hidden ? 0 : 1);
             },
             u_texture: (engine, loc, obj) => {
                 const { gl } = engine;

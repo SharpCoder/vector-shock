@@ -10,7 +10,7 @@ export type SpawnPlayerProps = {
 export function spawnPlayer({ update }: SpawnPlayerProps): Entity {
     const w = 30;
     const h = 30;
-    const x = 350;
+    const x = 200;
     const y = SCREEN_HEIGHT - h * 5 - 64;
 
     const player = new Entity({

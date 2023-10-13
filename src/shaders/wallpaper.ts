@@ -47,8 +47,7 @@ const fragmentShader = `
         gl_FragColor = vec4(
             mix(
                 texture2D(u_texture, v_texcoord).xyz,
-                // vec3(0,0,1),
-                vec3(0.9,.2,.4),
+                vec3(1,.1,.4),
                 pct
             ),
             1

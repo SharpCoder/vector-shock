@@ -23,7 +23,7 @@ import {
 
 const RAY_ENTITIES: Record<number, Entity> = {};
 const RAY_THICKNESS = 3;
-const MAX_RAYS = 2;
+const MAX_RAYS = 20;
 
 // The responsibility of this script is to render one or more rays to the map based on
 // the angle which the player is aiming, and whether the raytracing button is actively
@@ -37,13 +37,6 @@ export function applyRayCasting(
     // Reset all the rays
     for (const obj of Object.values(RAY_ENTITIES)) {
         obj.visible = false;
-    }
-
-    for (const obj of scene.objects) {
-        const entity = obj as Entity;
-        if (entity.beam) {
-            entity.beam.hit = false;
-        }
     }
 
     const { gl } = engine;
@@ -108,7 +101,7 @@ export function applyRayCasting(
 
                     if (
                         intercept &&
-                        velAlongNormal <= 0 &&
+                        velAlongNormal < 0 &&
                         pointInRect(intercept, expandedBbox) &&
                         Math.sign(targetY - oy) === Math.sign(intercept.y - oy)
                     ) {
@@ -152,7 +145,7 @@ export function applyRayCasting(
 
                 const sign = vert ? -1 : 1;
 
-                if (targetY > oy) {
+                if (targetY >= oy) {
                     targetX =
                         finalIntercept.x +
                         sign * Math.sign(ray.m) * (a - b) * 4;
@@ -169,8 +162,6 @@ export function applyRayCasting(
                 const resultRay = convertToInterceptFormula(
                     makeLine(ox, oy, targetX, targetY)
                 );
-
-                const mag = Math.hypot(finalIntercept.x, finalIntercept.y);
 
                 rays.push(resultRay);
             }

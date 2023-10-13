@@ -5,7 +5,7 @@ import { disappearWhenHit } from '../objectScripts/disappearWhenHit';
 
 export type DisappearWhenHitScript = {
     type: 'disappearWhenHit';
-    target_ref: string;
+    target_ref: string[];
 };
 
 export type MoveWhenHitScript = {

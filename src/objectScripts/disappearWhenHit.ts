@@ -11,9 +11,10 @@ export function disappearWhenHit(
     def: DisappearWhenHitScript
 ) {
     // Find the ref
-    const button = findByRef(engine, def.target_ref);
+    const buttons = def.target_ref.map((ref) => findByRef(engine, ref));
+    const allHit = buttons.every((button) => button?.beam.hit);
 
-    if (button && button.beam.hit) {
+    if (allHit) {
         this.visible = false;
     }
 }
