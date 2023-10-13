@@ -1,22 +1,19 @@
 import { Scene, rads } from 'webgl-engine';
-import { FOG_COLOR, SCREEN_HEIGHT, SCREEN_WIDTH } from '../constants';
+import { FOG_COLOR } from '../constants';
 import { spawnPlayer } from '../objects/player';
 import { applyPhysics } from '../scripts/physics';
-import { spawnPlatform } from '../objects/platform';
 import { DefaultShader } from '../shaders/default';
 import { applyRayCasting } from '../scripts/raycasting';
 import { BeamShader } from '../shaders/beam';
-import { spawnButton } from '../objects/button';
 import { applyCameraFollow } from '../scripts/cameraFollow';
 import { loadMap } from '../map';
-import { spawnShielded } from '../objects/shielded';
-import { spawnMirror } from '../objects/mirror';
 import { Puzzle1 } from '../levels/puzzle_1';
+import { WallpaperShader } from '../shaders/wallpaper';
 
 const player = spawnPlayer({});
 export const PrototypeScene = new Scene<unknown>({
     title: 'Prototype Scene',
-    shaders: [DefaultShader, BeamShader],
+    shaders: [WallpaperShader, DefaultShader, BeamShader],
     once: (engine) => {},
     update: function (time, engine) {
         applyRayCasting(player, PrototypeScene, engine);

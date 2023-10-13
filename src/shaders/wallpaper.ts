@@ -1,61 +1,65 @@
 // @ts-nocheck
 import { createShader } from './base';
 
-const default2DVertexShader = `
+const vertexShader = `
+    attribute vec3 a_color;
     attribute vec2 a_position;
+    attribute vec2 a_texcoord;
 
     uniform mat3 u_proj;
     uniform mat3 u_camera;
     uniform mat3 u_mat;
-    uniform bool u_isBeam;
+    uniform bool u_show;
 
     varying vec4 v_color;
     varying vec2 v_texcoord;
-    
+    varying vec2 v_pos;
 
     void main() {
-        if (u_isBeam) {
+        if (u_show) {
             gl_Position = vec4(vec3(u_proj * u_camera * u_mat * vec3(a_position, 1)).xy, 0, 1);
-            vec2 xy = vec3(vec3(a_position, 1)).xy;
-            v_texcoord = vec2(xy.x, xy.y);
-        } else {
-            gl_Position = vec4(0,0,0,0);
+            v_color = vec4(a_color, 1);
+            v_texcoord = vec2(a_texcoord.x, 1. - a_texcoord.y);
+            v_pos = gl_Position.xy;
         }
     }
 `;
 
-const default2DFragmentShader = `
+const fragmentShader = `
     precision mediump float;
-    
-    #define PI 3.1415926538
-    #define RGB(r,g,b) vec3(float(r) / 255., float(g) / 255., float(b) / 255.)
-
     varying vec4 v_color;
     varying vec2 v_texcoord;
+    varying vec2 v_pos;
     uniform float u_time;
-    vec3 colorA = vec3(0,.4,.8);
-    vec3 colorB = vec3(.2,.8,1);
 
-    float random (in vec2 _st) {
-        return fract(sin(dot(_st.xy,
-                             vec2(12.9898,78.233)))*
-            43758.5453123);
-    }
+    // The texture
+    uniform sampler2D u_texture;
+    uniform bool u_showtex;
 
     void main() {
-
-        vec2 st = v_texcoord / 10.;
+        vec2 st = v_texcoord/0.5;
         vec2 ipos = floor(st);
-        float pct = random(ipos*u_time);
+        float pct = v_pos.y-.35;//*sin(u_time);
 
-        gl_FragColor = vec4(mix(colorA, colorB, pct), 1.);
+        // Clamp pct
+        pct = clamp(pct, -1.,1.);
+
+        gl_FragColor = vec4(
+            mix(
+                texture2D(u_texture, v_texcoord).xyz,
+                // vec3(0,0,1),
+                vec3(0.9,.2,.4),
+                pct
+            ),
+            1
+        );
     }
 `;
 
 const gl = document.createElement('canvas').getContext('webgl');
-export const BeamShader = createShader({
-    name: 'beam',
-    order: 2,
+export const WallpaperShader = createShader({
+    name: 'wallpaper',
+    order: 3,
     objectDrawArgs: {
         components: 2,
         depthFunc: gl?.LESS,
@@ -71,24 +75,23 @@ export const BeamShader = createShader({
             gl.ONE
         );
     },
-    vertexShader: default2DVertexShader,
-    fragmentShader: default2DFragmentShader,
+    vertexShader,
+    fragmentShader,
     attributes: {},
     staticUniforms: {
         u_time: (engine, loc) => {
             const { gl } = engine;
             const time = new Date().getTime();
-
             gl.uniform1f(
                 loc,
-                Math.round(((time / 300) % (Math.PI * 2)) * 7.0) / 7.0
+                Math.round(((time / 1250) % (Math.PI * 1)) * 7.0) / 7.0
             );
         },
     },
     dynamicUniforms: {
-        u_isBeam: (engine, loc, obj) => {
+        u_show: (engine, loc, obj) => {
             const { gl } = engine;
-            gl.uniform1i(loc, obj.name.startsWith('ray_') ? 1 : 0);
+            gl.uniform1i(loc, obj.name === 'wallpaper' ? 1 : 0);
         },
     },
 });

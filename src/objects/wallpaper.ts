@@ -16,6 +16,7 @@ export function spawnWallpaper(): Entity {
         position: [0, 0, 0],
         rotation: zeros(),
         zIndex: -2,
+        hidden: true,
         texture: {
             repeat_horizontal: 'repeat',
             repeat_vertical: 'repeat',
