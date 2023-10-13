@@ -50,9 +50,6 @@ export function applyRayCasting(
     const { camera } = scene;
     if (!gl) return;
     if (engine.mousebutton != 1) return;
-    // if (engine.keymap['shift'] !== true) {
-    //     return;
-    // }
 
     // Bunch o constants
     const [scaleX, scaleY] = getScreenScale(gl);
@@ -87,6 +84,7 @@ export function applyRayCasting(
             for (const obj of scene.objects as Entity[]) {
                 if (obj === rayEntity) continue;
                 if (obj === player) continue;
+                if (obj.visible === false) continue;
                 if (!obj.collidable) continue;
 
                 const objLines = obj.getLines();
@@ -188,7 +186,6 @@ function createLine(index: number): Entity {
         applyPhysics: false,
         collidable: false,
         computeBbox: false,
-        hidden: true,
         vertexes: rect2D(1, 1),
         colors: Flatten(Repeat([255, 0, 255], 6)),
         offsets: [0, -RAY_THICKNESS / 2, 0],

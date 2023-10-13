@@ -52,7 +52,6 @@ export class Entity implements WorldDrawable {
     surfaces: Surface[];
     texture?: texture;
     colors?: number[];
-    hidden?: boolean;
     visible?: boolean;
     scale?: [number, number, number];
     preMatrix?: number[];
@@ -75,7 +74,6 @@ export class Entity implements WorldDrawable {
         name,
         ref,
         visible,
-        hidden,
         position,
         rotation,
         offsets,
@@ -108,7 +106,6 @@ export class Entity implements WorldDrawable {
         this.texture = texture;
         this.colors = colors;
         this.visible = visible;
-        this.hidden = hidden ?? false;
         this.scale = scale;
         this.preMatrix = preMatrix;
         this.additionalMatrix = additionalMatrix;

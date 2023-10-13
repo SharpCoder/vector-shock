@@ -30,3 +30,7 @@ export type ScriptFn = (
     time: number,
     engine: Engine<unknown>
 ) => void;
+
+export type GameProps = {
+    blurbs: string[];
+};

@@ -6,6 +6,7 @@ import { spawnWallpaper } from './objects/wallpaper';
 import { spawnButton } from './objects/button';
 import { spawnPlatform } from './objects/platform';
 import type { ScriptDefinition } from './scripts/objectScripts';
+import { spawnDoorway } from './objects/doorway';
 
 type Base = {
     ref: string;
@@ -24,11 +25,15 @@ type PlatformObject = Base &
         type: 'platform';
     };
 
+type DoorwayObject = Base & {
+    type: 'doorway';
+};
+
 type ButtonObject = Base & {
     type: 'button';
 };
 
-type MapObject = PlatformObject | ButtonObject;
+type MapObject = PlatformObject | ButtonObject | DoorwayObject;
 
 export type MapDefinition = {
     name: string;
@@ -45,6 +50,10 @@ function spawnEntity(def: MapObject) {
         case 'button': {
             return spawnButton(def.ref, def.x, def.y);
         }
+
+        case 'doorway': {
+            return spawnDoorway(def.ref, def.x, def.y);
+        }
     }
 }
 
@@ -53,7 +62,7 @@ export function loadMap(def: MapDefinition): Entity[] {
     objects.push(spawnWallpaper());
 
     // Build the floor
-    const tileSize = 64;
+    const tileSize = 48;
     const ox = 0;
     objects.push(spawnTile(ox, SCREEN_HEIGHT, def.width, tileSize, tileSize));
 

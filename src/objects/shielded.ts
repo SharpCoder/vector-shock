@@ -1,6 +1,5 @@
-import { rect2D, Flatten, Repeat, zeros, rads } from 'webgl-engine';
+import { rect2D, Flatten, Repeat, zeros } from 'webgl-engine';
 import { Entity } from './entity';
-import { processJump } from '../scripts/keyboard';
 
 export function spawnShielded(
     x: number,

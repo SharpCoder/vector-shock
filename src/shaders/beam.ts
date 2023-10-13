@@ -58,7 +58,7 @@ export const BeamShader = createShader({
     order: 2,
     objectDrawArgs: {
         components: 2,
-        depthFunc: gl?.LESS,
+        depthFunc: gl?.LEQUAL,
         mode: gl?.TRIANGLES,
         blend: false,
     },

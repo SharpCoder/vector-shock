@@ -44,7 +44,7 @@ export function applyPhysics(scene: Scene<unknown>, engine: Engine<unknown>) {
     }
 
     const collidables: Entity[] = (scene.objects as Entity[]).filter(
-        (obj) => (obj as Entity).collidable
+        (obj) => (obj as Entity).collidable && obj.visible !== false
     );
 
     for (const obj of scene.objects) {
