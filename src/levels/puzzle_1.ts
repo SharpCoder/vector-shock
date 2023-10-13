@@ -17,7 +17,7 @@ export const Puzzle1: MapDefinition = {
             scripts: [
                 {
                     type: 'moveWhenHit',
-                    dist: 300,
+                    dist: 100,
                     move_vec: [0, -1],
                     target_ref: 'button_1',
                 },
